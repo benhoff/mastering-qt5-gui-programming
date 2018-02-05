@@ -1,12 +1,8 @@
 #ifndef PICTURESORT_H
 #define PICTURESORT_H
 
-#include <QIcon>
-#include <QSize>
 #include <QImage>
 #include <QColor>
-#include <QtMath>
-#include <QPixmap>
 #include <QSortFilterProxyModel>
 
 
@@ -19,6 +15,7 @@ public:
 
 protected:
     bool lessThan(const QModelIndex &source_left, const QModelIndex &source_right) const;
+
 private:
     QImage get_image(const QModelIndex &source) const;
 };

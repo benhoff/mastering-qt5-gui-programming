@@ -21,7 +21,6 @@ public:
 private:
     Ui::MainWindow *ui;
     PhotoItemModel *model;
-    PictureSort *sort;
 };
 
 #endif // MAINWINDOW_H

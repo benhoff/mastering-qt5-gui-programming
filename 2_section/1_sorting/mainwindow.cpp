@@ -8,11 +8,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     model = new PhotoItemModel();
 
-    sort = new PictureSort();
-    sort->setSourceModel(model);
-    sort->sort(0);
+    // TODO: create a custom proxyfiltermodel and sort it here
 
-    ui->centralWidget->setModel(sort);
+    // NOTE: This model will be changed to our custom proxyfiltermodel
+    ui->centralWidget->setModel(model);
     // NOTE: these can also be set in the `.ui` file
     ui->centralWidget->setIconSize(QSize(90, 90));
     ui->centralWidget->setViewMode(QListView::IconMode);
