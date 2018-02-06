@@ -1,5 +1,4 @@
 #include "picturesort.h"
-#include <iostream>
 
 PictureSort::PictureSort(QObject *parent):
     QSortFilterProxyModel(parent)
@@ -19,16 +18,14 @@ QImage PictureSort::get_image(const QModelIndex &source) const
 
 bool PictureSort::lessThan(const QModelIndex &source_left, const QModelIndex &source_right) const
 {
+    // Use item from index?
     QImage left = get_image(source_left);
     QImage right = get_image(source_right);
 
-    QColor left_pixel = left.pixelColor(QPoint(0, 0)).toHsl();
-    QColor right_pixel = right.pixelColor(QPoint(0, 0)).toHsl();
+    QStandardItem* left = sourceModel()->itemFromIndex(source_left);
+    QStandardItem* right = sourceModel()->itemFromIndex(source_right);
 
-    qreal left_lab = get_lab(left_pixel);
-    qreal right_lab = get_lab(right_pixel);
 
-    return left_lab < right_lab;
 }
 
 qreal PictureSort::get_lab(const QColor color) const

@@ -3,12 +3,12 @@
 
 #include <QMainWindow>
 #include <QString>
+#include <QTabWidget>
+#include <QListView>
+#include <QTableView>
 #include "photoitemmodel.h"
 #include "picturesort.h"
 
-namespace Ui {
-class MainWindow;
-}
 
 class MainWindow : public QMainWindow
 {
@@ -19,8 +19,15 @@ public:
     ~MainWindow();
 
 private:
-    Ui::MainWindow *ui;
+    void setup_list_view_ui();
+    void setup_table_view_ui();
+    // The two main views, a QListView and QTableView
+    QListView *list_view;
+    QTableView *table_view;
     PhotoItemModel *model;
+    QTabWidget *central_widget;
+    PictureSort *sort_proxy_model;
+
 };
 
 #endif // MAINWINDOW_H

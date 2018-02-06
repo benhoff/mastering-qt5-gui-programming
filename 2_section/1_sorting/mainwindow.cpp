@@ -1,24 +1,44 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "picturesort.h"
+#include <QHeaderView>
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    QMainWindow(parent)
 {
-    ui->setupUi(this);
+    // instance of the custom type `PhotoItemModel`
     model = new PhotoItemModel();
+    sort_proxy_model = new PictureSort();
+    sort_proxy_model->setSourceModel(model);
 
-    // TODO: create a custom proxyfiltermodel and sort it here
+    list_view = new QListView();
+    list_view->setModel(sort_proxy_model);
+    setup_list_view_ui();
+    sort_proxy_model->sort(0);
 
-    // NOTE: This model will be changed to our custom proxyfiltermodel
-    ui->centralWidget->setModel(model);
-    // NOTE: these can also be set in the `.ui` file
-    ui->centralWidget->setIconSize(QSize(90, 90));
-    ui->centralWidget->setViewMode(QListView::IconMode);
-    ui->centralWidget->setResizeMode(QListView::Adjust);
+    table_view = new QTableView();
+    table_view->setModel(model);
+    setup_table_view_ui();
+
+    central_widget = new QTabWidget();
+    central_widget->addTab(list_view, "Proxy Model Example");
+    central_widget->addTab(table_view, "Programtic Sorting Example");
+
+    setCentralWidget(central_widget);
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+}
+
+void MainWindow::setup_list_view_ui()
+{
+    list_view->setIconSize(QSize(90, 90));
+    list_view->setViewMode(QListView::IconMode);
+    list_view->setResizeMode(QListView::Adjust);
+}
+
+void MainWindow::setup_table_view_ui()
+{
+    table_view->setIconSize(QSize(100, 100));
+    table_view->setSortingEnabled(true);
 }

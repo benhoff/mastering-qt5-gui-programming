@@ -7,7 +7,14 @@
 #include <QVariant>
 #include <QStandardItem>
 #include <QStandardItemModel>
-#include "picturesort.h"
+
+
+class PhotoItem : public QStandardItem
+{
+public:
+    bool operator<(const QStandardItem &other) const;
+
+};
 
 
 class PhotoItemModel : public QStandardItemModel
@@ -15,5 +22,7 @@ class PhotoItemModel : public QStandardItemModel
 public:
     PhotoItemModel(QObject *parent=0);
 };
+
+
 
 #endif // PHOTOITEMMODEL_H

@@ -30,10 +30,8 @@ SOURCES += \
 HEADERS += \
         mainwindow.h \
     photoitemmodel.h \
-    picturesort.h
-
-FORMS += \
-        mainwindow.ui
+    picturesort.h \
+    luminosity_calc.h
 
 RESOURCES += \
     ../pictures.qrc
