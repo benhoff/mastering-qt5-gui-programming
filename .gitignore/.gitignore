@@ -38,4 +38,4 @@ Makefile*
 CMakeLists.txt.user*
 
 # project specific
-2_section/pics/
+*.png
