@@ -25,13 +25,13 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     photoitemmodel.cpp \
-    picturesort.cpp
+    sortproxymodel.cpp
 
 HEADERS += \
         mainwindow.h \
     photoitemmodel.h \
-    picturesort.h \
-    luminosity_calc.h
+    luminosity_calc.h \
+    sortproxymodel.h
 
 RESOURCES += \
     ../pictures.qrc

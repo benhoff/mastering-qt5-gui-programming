@@ -1,13 +1,12 @@
 #include "mainwindow.h"
-#include "picturesort.h"
-#include <QHeaderView>
+#include "sortproxymodel.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
     // instance of the custom type `PhotoItemModel`
     model = new PhotoItemModel();
-    sort_proxy_model = new PictureSort();
+    sort_proxy_model = new SortProxyModel();
     sort_proxy_model->setSourceModel(model);
 
     list_view = new QListView();

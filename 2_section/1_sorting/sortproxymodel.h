@@ -4,7 +4,7 @@
 #include <QSortFilterProxyModel>
 
 
-class PictureSort : public QSortFilterProxyModel
+class SortProxyModel: public QSortFilterProxyModel
 {
 public:
     PictureSort(QObject *parent=0);

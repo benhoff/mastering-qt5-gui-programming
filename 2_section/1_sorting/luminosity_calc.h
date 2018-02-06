@@ -50,7 +50,7 @@ namespace{
         return luminosity;
     }
 
-    inline qreal _icon_to_lumonsity(const QIcon icon)
+    inline qreal icon_to_lumonsity(const QIcon icon)
     {
         QImage image = icon.pixmap(50, 50).toImage();
         QColor pixel = image.pixelColor(QPoint(0, 0));
@@ -63,8 +63,8 @@ inline bool luminosity_less_than(const QVariant left, const QVariant right)
     QIcon left_icon = left.value<QIcon>();
     QIcon right_icon = right.value<QIcon>();
 
-    qreal left_luminosity = _icon_to_lumonsity(left_icon);
-    qreal right_luminosity = _icon_to_lumonsity(right_icon);
+    qreal left_luminosity = icon_to_lumonsity(left_icon);
+    qreal right_luminosity = icon_to_lumonsity(right_icon);
 
     return left_luminosity < right_luminosity;
 }

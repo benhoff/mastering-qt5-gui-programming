@@ -7,7 +7,7 @@
 #include <QListView>
 #include <QTableView>
 #include "photoitemmodel.h"
-#include "picturesort.h"
+#include "sortproxymodel.h"
 
 
 class MainWindow : public QMainWindow
@@ -26,7 +26,7 @@ private:
     QTableView *table_view;
     PhotoItemModel *model;
     QTabWidget *central_widget;
-    PictureSort *sort_proxy_model;
+    SortProxyModel *sort_proxy_model;
 
 };
 
