@@ -17,15 +17,18 @@ public:
 
         for (int i = 0; i < 100; i++)
         {
+            // Create Icon
             QString filepath(":/pics/" + QString::number(i) + ".png");
             QIcon icon(filepath);
 
+            // Create Item & Set Icon
             QStandardItem *item = new QStandardItem();
             item->setIcon(icon);
 
+            // Set Item in model
             setItem(i, 0, item);
 
-            // Second row
+            // Second column
             QStandardItem *second_item = new QStandardItem();
             second_item->setIcon(last_icon);
 
