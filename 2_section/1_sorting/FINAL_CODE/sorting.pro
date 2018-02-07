@@ -23,17 +23,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp \
-    photoitemmodel.cpp \
-    picturesort.cpp
+        mainwindow.cpp
 
 HEADERS += \
         mainwindow.h \
     photoitemmodel.h \
-    picturesort.h
-
-FORMS += \
-        mainwindow.ui
+    luminosity_calc.h \
+    sortproxymodel.h
 
 RESOURCES += \
     ../pictures.qrc
