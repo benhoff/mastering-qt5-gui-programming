@@ -4,7 +4,6 @@
 #include <QColor>
 #include <QImage>
 #include <QtMath>
-#include <QStandardItem>
 
 namespace{
 

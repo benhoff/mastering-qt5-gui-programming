@@ -2,28 +2,10 @@
 #define PHOTOITEMMODEL_H
 
 #include <QIcon>
-#include <QImage>
-#include <QObject>
 #include <QVariant>
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include "luminosity_calc.h"
-
-class PhotoItem : public QStandardItem
-{
-public:
-    bool operator<(const QStandardItem &other) const
-    {
-        QVariant left_data =  data(Qt::DecorationRole);
-        QVariant right_data = other.data(Qt::DecorationRole);
-
-        QIcon left_icon = left_data.value<QIcon>();
-        QIcon right_icon = right_data.value<QIcon>();
-
-        return luminosity_less_than(left_icon, right_icon);
-    }
-
-};
 
 class PhotoItemModel : public QStandardItemModel
 {
@@ -38,14 +20,13 @@ public:
             QString filepath(":/pics/" + QString::number(i) + ".png");
             QIcon icon(filepath);
 
-            // Create a new QStandaradItem
-            PhotoItem *item = new PhotoItem();
+            QStandardItem *item = new QStandardItem();
             item->setIcon(icon);
 
             setItem(i, 0, item);
 
             // Second row
-            PhotoItem *second_item = new PhotoItem();
+            QStandardItem *second_item = new QStandardItem();
             second_item->setIcon(last_icon);
 
             setItem(i, 1, second_item);

@@ -8,11 +8,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     // instance of the custom type `PhotoItemModel`
     model = new PhotoItemModel();
+
     list_view = new QListView();
-
-    QSortFilterProxyModel *sort_proxy_model = new QSortFilterProxyModel();
-    sort_proxy_model->setSourceModel(model);
-
     list_view->setModel(model);
     setup_list_view_ui();
 
@@ -41,5 +38,5 @@ void MainWindow::setup_list_view_ui()
 void MainWindow::setup_table_view_ui()
 {
     table_view->setIconSize(QSize(100, 100));
-    table_view->setSortingEnabled(true);
+    // table_view->setSortingEnabled(true);
 }
