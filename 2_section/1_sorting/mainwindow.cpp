@@ -1,18 +1,20 @@
 #include "mainwindow.h"
 #include "sortproxymodel.h"
 
+#include <QSortFilterProxyModel>
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
     // instance of the custom type `PhotoItemModel`
     model = new PhotoItemModel();
-    sort_proxy_model = new SortProxyModel();
+    list_view = new QListView();
+
+    QSortFilterProxyModel *sort_proxy_model = new QSortFilterProxyModel();
     sort_proxy_model->setSourceModel(model);
 
-    list_view = new QListView();
-    list_view->setModel(sort_proxy_model);
+    list_view->setModel(model);
     setup_list_view_ui();
-    sort_proxy_model->sort(0);
 
     table_view = new QTableView();
     table_view->setModel(model);

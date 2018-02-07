@@ -23,9 +23,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp \
-    photoitemmodel.cpp \
-    sortproxymodel.cpp
+        mainwindow.cpp
 
 HEADERS += \
         mainwindow.h \

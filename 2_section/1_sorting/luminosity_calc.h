@@ -58,13 +58,10 @@ namespace{
     }
 }
 
-inline bool luminosity_less_than(const QVariant left, const QVariant right)
+inline bool luminosity_less_than(const QIcon left, const QIcon right)
 {
-    QIcon left_icon = left.value<QIcon>();
-    QIcon right_icon = right.value<QIcon>();
-
-    qreal left_luminosity = icon_to_lumonsity(left_icon);
-    qreal right_luminosity = icon_to_lumonsity(right_icon);
+    qreal left_luminosity = icon_to_lumonsity(left);
+    qreal right_luminosity = icon_to_lumonsity(right);
 
     return left_luminosity < right_luminosity;
 }
