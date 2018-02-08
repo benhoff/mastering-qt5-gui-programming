@@ -10,7 +10,15 @@ QColor QColorLuminancePicker::y_to_color(int y)
 
 int QColorLuminancePicker::color_to_y(QColor color)
 {
-    int index = virdis_values.indexOf(color);
+    int index = -1;
+    for (QVector<QColor>::iterator it = virdis_values.begin(); it != virdis_values.end(); it++)
+    {
+        if (*it == color)
+        {
+            index = std::distance(virdis_values.begin(), it);
+            break;
+        }
+    }
     int d = height() - 2*coff - 1;
     return coff + (255-index)*d/255;
 }
@@ -86,7 +94,6 @@ void QColorLuminancePicker::paintEvent(QPaintEvent *)
 QColorLuminancePicker::QColorLuminancePicker(QColor color, QWidget* parent)
     :QWidget(parent)
 {
-    // hue = 100; val = 100; sat = 100;
     pix = 0;
     virdis_values = QVector<QColor>{
             get_color(0.267004, 0.004874, 0.329415),

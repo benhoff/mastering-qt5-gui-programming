@@ -1,16 +1,21 @@
 #include "mainwindow.h"
 
+#include <QIcon>
 #include <QPixmap>
 #include <QToolBar>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QPushButton>
+#include <QSortFilterProxyModel>
 #include "luminosity_calc.h"
 
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
 {
+    color_min = QColor(68, 1, 84);
+    color_max = QColor(254, 231, 36);
+
     QToolBar *toolbar = new QToolBar();
     min_button = new QToolButton();
     max_button = new QToolButton();
@@ -18,17 +23,19 @@ MainWindow::MainWindow(QWidget *parent) :
     toolbar->addWidget(min_button);
     toolbar->addWidget(max_button);
 
+    addToolBar(toolbar);
+
     connect(max_button, &QToolButton::clicked, this, &MainWindow::set_maximum);
     connect(min_button, &QToolButton::clicked, this, &MainWindow::set_minimum);
 
-    addToolBar(toolbar);
 
     list_view = new QListView();
     photo_model = new PhotoModel();
-    picture_filter = new PictureFilter();
+
+    picture_filter = new QSortFilterProxyModel();
     picture_filter->setSourceModel(photo_model);
 
-    list_view->setModel(picture_filter);
+    list_view->setModel(photo_model);
 
     setup_list_view_ui();
     setup_tool_buttons_ui();
@@ -52,8 +59,8 @@ void MainWindow::setup_tool_buttons_ui()
     QPixmap min_pix(20, 20);
     QPixmap max_pix(20, 20);
 
-    min_pix.fill(QColor(68, 1, 84));
-    max_pix.fill(QColor(254, 232, 37));
+    min_pix.fill(color_min);
+    max_pix.fill(color_max);
 
     QIcon min_icon(min_pix);
     QIcon max_icon(max_pix);
@@ -76,7 +83,7 @@ void MainWindow::set_minimum()
     min_button->setIcon(min_icon);
 
     qreal luminosity = get_luminosity(color_min);
-    picture_filter->set_min_filter_value(luminosity);
+    // picture_filter->set_min_filter_value(luminosity);
 }
 
 void MainWindow::set_maximum()
@@ -88,5 +95,5 @@ void MainWindow::set_maximum()
     max_button->setIcon(max_icon);
 
     qreal luminosity = get_luminosity(color_max);
-    picture_filter->set_max_filter_value(luminosity);
+    // picture_filter->set_max_filter_value(luminosity);
 }

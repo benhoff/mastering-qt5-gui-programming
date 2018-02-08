@@ -1,8 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QIcon>
-#include <QString>
 #include <QColor>
 #include <QMainWindow>
 #include <QListView>
@@ -28,12 +26,15 @@ private slots:
 private:
     void setup_list_view_ui();
     void setup_tool_buttons_ui();
+
     QToolButton *min_button;
     QToolButton *max_button;
 
     QListView *list_view;
     PhotoModel *photo_model;
+
     PictureFilter *picture_filter;
+
     QColor color_min;
     QColor color_max;
 };

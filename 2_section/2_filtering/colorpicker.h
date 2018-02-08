@@ -40,7 +40,6 @@ private:
     void set_color(QColor color);
 
     QColor y_to_color(int y);
-    // TODO: Determine if needed
     int color_to_y(QColor color);
 
     QPixmap *pix;
