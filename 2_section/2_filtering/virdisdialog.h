@@ -11,8 +11,8 @@
 class VirdisDialog : public QDialog
 {
 public:
-    VirdisDialog(int initial_index=0, QWidget *parent=0);
-    static QColor get_color(int initial_index=0, QWidget* parent=0, const QString &title=QString());
+    VirdisDialog(QColor color, QWidget *parent=0);
+    static QColor get_color(QColor color, QWidget* parent=0, const QString &title=QString());
 private:
     QColor get_current_color();
     QColorLuminancePicker *picker;

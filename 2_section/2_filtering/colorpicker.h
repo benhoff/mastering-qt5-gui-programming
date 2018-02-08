@@ -7,22 +7,33 @@
 #include <QMouseEvent>
 #include <qdrawutil.h>
 
+namespace{
+    inline QColor get_color(float r, float g, float b)
+    {
+        int red = (int)((r)*256.0);
+        int green = (int)((g)*256.0);
+        int blue = (int)((b)*256.0);
+        return QColor(red, green, blue);
+    }
+}
 
 class QColorLuminancePicker : public QWidget
 {
     Q_OBJECT
 public:
-    QColorLuminancePicker(int index=0, QWidget* parent=0);
+    QColorLuminancePicker(QColor color, QWidget* parent=0);
     ~QColorLuminancePicker();
+
     QColor current_color;
 
 signals:
     void new_color(QColor val);
 
 protected:
-    void paintEvent(QPaintEvent*) Q_DECL_OVERRIDE;
-    void mouseMoveEvent(QMouseEvent *) Q_DECL_OVERRIDE;
-    void mousePressEvent(QMouseEvent *) Q_DECL_OVERRIDE;
+    void paintEvent(QPaintEvent*);
+    void mouseMoveEvent(QMouseEvent *);
+    void mousePressEvent(QMouseEvent *);
+    QSize sizeHint() const;
 
 private:
     enum { foff = 3, coff = 4 }; //frame and contents offset
@@ -33,7 +44,6 @@ private:
     int color_to_y(QColor color);
 
     QPixmap *pix;
-    // Note: don't need the extensions that we have here actually.
     QVector<QColor> virdis_values;
 };
 #endif // COLORPICKER_H

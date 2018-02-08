@@ -1,20 +1,19 @@
 #include "virdisdialog.h"
 
-VirdisDialog::VirdisDialog(int initial_index, QWidget *parent) :
+VirdisDialog::VirdisDialog(QColor color, QWidget *parent) :
     QDialog(parent)
 {
     QVBoxLayout *main_layout = new QVBoxLayout();
 
-    picker = new QColorLuminancePicker(initial_index);
+    picker = new QColorLuminancePicker(color);
     main_layout->addWidget(picker);
 
     QHBoxLayout *box_layout = new QHBoxLayout();
 
     // TODO: some signal connections.
     QPushButton *ok =  new QPushButton("Ok");
-    QPushButton *nope = new QPushButton("Nope");
     box_layout->addWidget(ok);
-    box_layout->addWidget(nope);
+    connect(ok, &QPushButton::clicked, this, &VirdisDialog::accept);
 
     main_layout->addLayout(box_layout);
     setLayout(main_layout);
@@ -25,9 +24,9 @@ QColor VirdisDialog::get_current_color()
     return picker->current_color;
 }
 
-QColor VirdisDialog::get_color(int initial_index, QWidget *parent, const QString &title)
+QColor VirdisDialog::get_color(QColor color, QWidget *parent, const QString &title)
 {
-    VirdisDialog dialog(initial_index, parent);
+    VirdisDialog dialog(color, parent);
     if (!title.isEmpty())
         dialog.setWindowTitle(title);
     dialog.exec();

@@ -1,5 +1,4 @@
 #include "colorpicker.h"
-#include <iostream>
 
 QColor QColorLuminancePicker::y_to_color(int y)
 {
@@ -43,12 +42,15 @@ void QColorLuminancePicker::set_color(QColor color)
     emit new_color(current_color);
 }
 
+QSize QColorLuminancePicker::sizeHint() const
+{
+    return QSize(50, 300);
+}
+
 
 void QColorLuminancePicker::paintEvent(QPaintEvent *)
 {
     int w = width() - 5;
-
-    std::cout << width() << " " << height() << std::endl;
 
     QRect r(0, foff, w, height() - 2*foff);
     int wi = r.width() - 2;
@@ -59,12 +61,14 @@ void QColorLuminancePicker::paintEvent(QPaintEvent *)
         int y;
         uint *pixel = (uint *) img.scanLine(0);
         for (y = 0; y < hi; y++) {
-            uint *end = pixel + wi;
-            // FIXME: Use virdis instead here
-            std::fill(pixel, end, virdis_values[y].rgb());
-            pixel = end;
-        }
+            const uint *end = pixel + wi;
+            while (pixel < end) {
+                QColor c = y_to_color(y+coff);
+                *pixel = c.rgb();
+                ++pixel;
+            }
         pix = new QPixmap(QPixmap::fromImage(img));
+        }
     }
     QPainter p(this);
     p.drawPixmap(1, coff, *pix);
@@ -73,27 +77,18 @@ void QColorLuminancePicker::paintEvent(QPaintEvent *)
     p.setPen(g.foreground().color());
     p.setBrush(g.foreground());
     QPolygon a;
-    int y = color_to_y(current_color);
-    a.setPoints(3, w, y, w+5, y+5, w+5, y-5);
+    int y_2 = color_to_y(current_color);
+    a.setPoints(3, w, y_2, w+5, y_2+5, w+5, y_2-5);
     p.eraseRect(w, 0, 5, height());
     p.drawPolygon(a);
 }
 
-QColor get_color(float r, float g, float b)
-{
-    int red = (int)((r)*256.0);
-    int green = (int)((g)*256.0);
-    int blue = (int)((b)*256.0);
-    return QColor(red, green, blue);
-
-}
-
-QColorLuminancePicker::QColorLuminancePicker(int index, QWidget* parent)
+QColorLuminancePicker::QColorLuminancePicker(QColor color, QWidget* parent)
     :QWidget(parent)
 {
     // hue = 100; val = 100; sat = 100;
     pix = 0;
-    virdis_values = QVector<QColor> {
+    virdis_values = QVector<QColor>{
             get_color(0.267004, 0.004874, 0.329415),
             get_color(0.268510, 0.009605, 0.335427),
             get_color(0.269944, 0.014625, 0.341379),
@@ -351,5 +346,5 @@ QColorLuminancePicker::QColorLuminancePicker(int index, QWidget* parent)
             get_color(0.983868, 0.904867, 0.136897),
             get_color(0.993248, 0.906157, 0.143936)};
 
-    current_color = this->virdis_values[index];
+    current_color = color;
 }

@@ -3,18 +3,11 @@
 
 #include <QIcon>
 #include <QString>
-#include <QPixmap>
 #include <QColor>
-#include <QMenuBar>
-#include <QMenu>
-#include <QToolBar>
 #include <QMainWindow>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QPushButton>
-#include <QToolButton>
 #include <QListView>
-#include <QColorDialog>
+#include <QToolButton>
+
 #include "photomodel.h"
 #include "picturefilter.h"
 #include "virdisdialog.h"
@@ -31,7 +24,10 @@ public:
 private slots:
     void set_minimum();
     void set_maximum();
+
 private:
+    void setup_list_view_ui();
+    void setup_tool_buttons_ui();
     QToolButton *min_button;
     QToolButton *max_button;
 

@@ -14,7 +14,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    photomodel.cpp \
     picturefilter.cpp \
     colorpicker.cpp \
     virdisdialog.cpp
@@ -24,7 +23,8 @@ HEADERS += \
     photomodel.h \
     picturefilter.h \
     colorpicker.h \
-    virdisdialog.h
+    virdisdialog.h \
+    luminosity_calc.h
 
 RESOURCES += \
     ../pictures.qrc

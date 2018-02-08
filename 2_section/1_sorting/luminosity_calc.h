@@ -26,6 +26,10 @@ namespace{
         y = rgb[0] * 0.2126 + rgb[1] * 0.7152 + rgb[2] * 0.0722;
         z = rgb[0] * 0.0193 + rgb[1] * 0.1192 + rgb[2] * 0.9505;
 
+        x = x/100.;
+        y = y/100.;
+        z = z/100.;
+
         std::array<qreal, 3> xyz{x, y, z};
 
         qreal one_third = 1./3.;
