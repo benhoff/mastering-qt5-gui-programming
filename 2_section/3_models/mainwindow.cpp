@@ -1,27 +1,43 @@
-#include <QVBoxLayout>
 #include "mainwindow.h"
+
+/*
+#include <QItemEditorFactory>
+#include <QItemEditorCreatorBase>
+#include "colorpicker.h"
+*/
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-
-
-
-    model = new PictureModel();
+    // setup_default_editor();
+    model = new PhotoModel();
     view = new QListView();
     view->setModel(model);
+    setup_list_view_ui();
 
-    main_widget = new QWidget();
-    QVBoxLayout *layout = new QVBoxLayout();
-    layout->addWidget(view);
-    main_widget->setLayout(layout);
-    // TODO: add in some layouts here to mess with our model.
-    // http://doc.qt.io/qt-5/model-view-programming.html#model-subclassing-reference
-    setCentralWidget(main_widget);
+    setCentralWidget(view);
 
 }
 
 MainWindow::~MainWindow()
 {
 
+}
+/*
+void MainWindow::setup_default_editor()
+{
+    QItemEditorFactory *factory = new QItemEditorFactory;
+    // FIXME: fix that name. Is brutal
+    QItemEditorCreatorBase *color_picker = new QStandardItemEditorCreator<QColorLuminancePicker>();
+    factory->registerEditor(QVariant::Color, color_picker);
+
+    QItemEditorFactory::setDefaultFactory(factory);
+
+}
+*/
+void MainWindow::setup_list_view_ui()
+{
+    view->setIconSize(QSize(90, 90));
+    view->setViewMode(QListView::IconMode);
+    view->setResizeMode(QListView::Adjust);
 }

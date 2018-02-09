@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QListView>
-#include "picturemodel.h"
+#include "photomodel.h"
 
 class MainWindow : public QMainWindow
 {
@@ -13,8 +13,11 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 private:
+    // void setup_default_editor();
+    void setup_list_view_ui();
+
     QListView *view;
-    PictureModel *model;
+    PhotoModel *model;
     QWidget *main_widget;
 
 };

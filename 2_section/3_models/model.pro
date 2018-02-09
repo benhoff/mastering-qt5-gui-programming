@@ -26,8 +26,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-        picturemodel.cpp
+    photomodel.cpp \
 
 HEADERS += \
         mainwindow.h \
-        picuremodel.h
+    photomodel.h \
+
+RESOURCES += ../pictures.qrc
