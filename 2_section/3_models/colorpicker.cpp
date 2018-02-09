@@ -1,74 +1,101 @@
-#include "photomodel.h"
+#include "colorpicker.h"
 
-#include <QString>
-#include <QColor>
-#include <QRandomGenerator>
-
-PhotoModel::PhotoModel(QObject *parent)
-    : QAbstractListModel(parent)
+QColor QColorLuminancePicker::y_to_color(int y)
 {
-    setup_virdis_values();
-    colors.reserve(100);
-    QRandomGenerator random = QRandomGenerator::securelySeeded();
+    int d = height() - 2*coff - 1;
+    int index = 255 - (y - coff)*255/d;
+    return virdis_values[index];
 
-    for (int i=0; i<100; i++)
+}
+
+int QColorLuminancePicker::color_to_y(QColor color)
+{
+    int index = -1;
+    for (QVector<QColor>::iterator it = virdis_values.begin(); it != virdis_values.end(); it++)
     {
-        QColor color = _virdis_values[random.bounded(255)];
-        colors.append(color);
+        if (*it == color)
+        {
+            index = std::distance(virdis_values.begin(), it);
+            break;
+        }
     }
+    int d = height() - 2*coff - 1;
+    return coff + (255-index)*d/255;
 }
 
-int PhotoModel::rowCount(const QModelIndex &parent) const
+QColorLuminancePicker::~QColorLuminancePicker()
 {
-    // For list models only the root node (an invalid parent) should return the list's size. For all
-    // other (valid) parents, rowCount() should return 0 so that it does not become a tree model.
-    if (parent.isValid())
-        return 0;
-
-    return colors.size();
+    delete pix;
 }
 
-QVariant PhotoModel::data(const QModelIndex &index, int role) const
+void QColorLuminancePicker::mouseMoveEvent(QMouseEvent *m)
 {
-    if (!index.isValid())
-        return QVariant();
+    set_color(y_to_color(m->y()));
+}
+void QColorLuminancePicker::mousePressEvent(QMouseEvent *m)
+{
+    set_color(y_to_color(m->y()));
+}
 
-    if (index.row() > colors.size())
-        return QVariant();
+void QColorLuminancePicker::set_color(QColor color)
+{
+    if (color == current_color)
+        return;
 
-    if (role == Qt::DecorationRole)
-        return colors[index.row()];
+    // NOTE: should actually check if the color is in the index
+    current_color = color;
 
-    if (role == Qt::WhatsThisRole)
-    {
-        QColor color = colors[index.row()];
-        return QString("R: " + QString::number(color.red()));// + " G: " QString::number(color.green()) + " B: " QString::number(color.blue));
+    delete pix; pix=0;
+    repaint();
+    emit new_color(current_color);
+}
+
+QSize QColorLuminancePicker::sizeHint() const
+{
+    return QSize(50, 300);
+}
+
+
+void QColorLuminancePicker::paintEvent(QPaintEvent *)
+{
+    int w = width() - 5;
+
+    QRect r(0, foff, w, height() - 2*foff);
+    int wi = r.width() - 2;
+    int hi = r.height() - 2;
+    if (!pix || pix->height() != hi || pix->width() != wi) {
+        delete pix;
+        QImage img(wi, hi, QImage::Format_RGB32);
+        int y;
+        uint *pixel = (uint *) img.scanLine(0);
+        for (y = 0; y < hi; y++) {
+            const uint *end = pixel + wi;
+            while (pixel < end) {
+                QColor c = y_to_color(y+coff);
+                *pixel = c.rgb();
+                ++pixel;
+            }
+        pix = new QPixmap(QPixmap::fromImage(img));
+        }
     }
-
-    return QVariant();
+    QPainter p(this);
+    p.drawPixmap(1, coff, *pix);
+    const QPalette &g = palette();
+    qDrawShadePanel(&p, r, g, true);
+    p.setPen(g.foreground().color());
+    p.setBrush(g.foreground());
+    QPolygon a;
+    int y_2 = color_to_y(current_color);
+    a.setPoints(3, w, y_2, w+5, y_2+5, w+5, y_2-5);
+    p.eraseRect(w, 0, 5, height());
+    p.drawPolygon(a);
 }
 
-bool PhotoModel::setData(const QModelIndex &index, const QVariant &value, int role)
+QColorLuminancePicker::QColorLuminancePicker(QColor color, QWidget* parent)
+    :QWidget(parent), current_color(color)
 {
-    if (data(index, role) != value){
-        colors[index.row()] = value.value<QColor>();
-        emit dataChanged(index, index, QVector<int>() << role);
-        return true;
-    }
-    return false;
-}
-
-Qt::ItemFlags PhotoModel::flags(const QModelIndex &index) const
-{
-    if (!index.isValid())
-        return Qt::NoItemFlags;
-
-    return Qt::ItemIsEnabled;
-}
-
-void PhotoModel::setup_virdis_values()
-{
-    _virdis_values = QVector<QColor>{
+    pix = 0;
+    virdis_values = QVector<QColor>{
             get_color(0.267004, 0.004874, 0.329415),
             get_color(0.268510, 0.009605, 0.335427),
             get_color(0.269944, 0.014625, 0.341379),

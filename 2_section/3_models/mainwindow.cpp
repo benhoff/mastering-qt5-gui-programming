@@ -1,40 +1,34 @@
 #include "mainwindow.h"
-
-/*
-#include <QItemEditorFactory>
-#include <QItemEditorCreatorBase>
-#include "colorpicker.h"
-*/
+#include "virdisdialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    // setup_default_editor();
     model = new PhotoModel();
     view = new QListView();
-    view->setModel(model);
     setup_list_view_ui();
+
+    view->setModel(model);
+
+    connect(view, &QListView::clicked, this, &MainWindow::change_color);
 
     setCentralWidget(view);
 
+}
+
+void MainWindow::change_color(const QModelIndex &index)
+{
+    QColor current_color = index.data(Qt::DecorationRole).value<QColor>();
+    QColor color = VirdisDialog::get_color(current_color);
+
+    model->setData(index, color, Qt::DecorationRole);
 }
 
 MainWindow::~MainWindow()
 {
 
 }
-/*
-void MainWindow::setup_default_editor()
-{
-    QItemEditorFactory *factory = new QItemEditorFactory;
-    // FIXME: fix that name. Is brutal
-    QItemEditorCreatorBase *color_picker = new QStandardItemEditorCreator<QColorLuminancePicker>();
-    factory->registerEditor(QVariant::Color, color_picker);
 
-    QItemEditorFactory::setDefaultFactory(factory);
-
-}
-*/
 void MainWindow::setup_list_view_ui()
 {
     view->setIconSize(QSize(90, 90));

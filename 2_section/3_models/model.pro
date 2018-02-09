@@ -27,9 +27,12 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     photomodel.cpp \
+    colorpicker.cpp \
+    virdisdialog.cpp
 
 HEADERS += \
         mainwindow.h \
     photomodel.h \
-
-RESOURCES += ../pictures.qrc
+    color_utils.h \
+    colorpicker.h \
+    virdisdialog.h
