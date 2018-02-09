@@ -27,9 +27,11 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     picturemodel.cpp \
-    treeitem.cpp
+    treeitem.cpp \
+    test.cpp
 
 HEADERS += \
         mainwindow.h \
     picturemodel.h \
-    treeitem.h
+    treeitem.h \
+    test.h
