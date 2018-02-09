@@ -1,4 +1,7 @@
 #include "virdisdialog.h"
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QPushButton>
 
 VirdisDialog::VirdisDialog(QColor color, QWidget *parent) :
     QDialog(parent)
@@ -10,7 +13,6 @@ VirdisDialog::VirdisDialog(QColor color, QWidget *parent) :
 
     QHBoxLayout *box_layout = new QHBoxLayout();
 
-    // TODO: some signal connections.
     QPushButton *ok =  new QPushButton("Ok");
     box_layout->addWidget(ok);
     connect(ok, &QPushButton::clicked, this, &VirdisDialog::accept);

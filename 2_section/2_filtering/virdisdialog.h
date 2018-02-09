@@ -2,9 +2,6 @@
 #define VIRDISDIALOG_H
 
 #include <QDialog>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QPushButton>
 #include "colorpicker.h"
 
 
