@@ -2,6 +2,7 @@
 #define PICTURESORT_H
 
 #include <QSortFilterProxyModel>
+#include "luminosity_calc.h"
 
 
 class PictureFilter: public QSortFilterProxyModel
@@ -12,16 +13,6 @@ public:
         min_filter_value(0.),
         max_filter_value(100.)
     {
-    }
-
-    void set_min_filter_value(const qreal value)
-    {
-
-    }
-
-    void set_max_filter_value(const qreal value)
-    {
-
     }
 
 protected:
