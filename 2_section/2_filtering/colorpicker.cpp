@@ -4,8 +4,12 @@ QColor ColorPicker::y_to_color(int y)
 {
     int d = height() - 2*coff - 1;
     int index = 255 - (y - coff)*255/d;
-    return viridis_values[index];
-
+    if (index > 0 && index < 255)
+        return viridis_values[index];
+    else if (index < 0)
+            return viridis_values[0];
+    else
+        return viridis_values[255];
 }
 
 int ColorPicker::color_to_y(QColor color)

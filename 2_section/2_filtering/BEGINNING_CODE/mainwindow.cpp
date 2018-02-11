@@ -11,10 +11,10 @@
 
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent)
+    QMainWindow(parent),
+    color_min(QColor(68, 1, 84)),
+    color_max(QColor(254, 231, 36))
 {
-    color_min = QColor(68, 1, 84);
-    color_max = QColor(254, 231, 36);
 
     QToolBar *toolbar = new QToolBar();
     min_button = new QToolButton();
