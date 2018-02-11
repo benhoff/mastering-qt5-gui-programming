@@ -26,7 +26,6 @@ public:
 
 private:
     void setup_virdis_values();
-    QVector<QIcon> icons;
     QVector<QColor> colors;
     QVector<QColor> _viridis_values;
 };

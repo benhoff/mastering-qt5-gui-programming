@@ -8,10 +8,11 @@ PhotoModel::PhotoModel(QObject *parent)
     : QAbstractListModel(parent)
 {
     setup_virdis_values();
-    colors.reserve(100);
     QRandomGenerator random = QRandomGenerator::securelySeeded();
+	int num_colors = 100;
 
-    for (int i=0; i<100; i++)
+    colors.reserve(num_colors);
+    for (int i = 0; i < num_colors; i++)
     {
         QColor color = _viridis_values[random.bounded(255)];
         colors.append(color);
@@ -20,36 +21,23 @@ PhotoModel::PhotoModel(QObject *parent)
 
 int PhotoModel::rowCount(const QModelIndex &parent) const
 {
-    // For list models only the root node (an invalid parent) should return the list's size. For all
-    // other (valid) parents, rowCount() should return 0 so that it does not become a tree model.
-    if (parent.isValid())
-        return 0;
-
-    return colors.size();
+	// TODO: Implement
 }
+
 
 QVariant PhotoModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
         return QVariant();
 
-    if (index.row() > colors.size())
-        return QVariant();
-
-    if (role == Qt::DecorationRole)
-        return colors[index.row()];
+	// TODO: Implement
 
     return QVariant();
 }
 
 bool PhotoModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (data(index, role) != value){
-        colors[index.row()] = value.value<QColor>();
-        emit dataChanged(index, index, QVector<int>() << role);
-        return true;
-    }
-    return false;
+	// TODO: Implement
 }
 
 Qt::ItemFlags PhotoModel::flags(const QModelIndex &index) const
@@ -57,7 +45,7 @@ Qt::ItemFlags PhotoModel::flags(const QModelIndex &index) const
     if (!index.isValid())
         return Qt::NoItemFlags;
 
-    return Qt::ItemIsEnabled;
+	// TODO: Implement
 }
 
 void PhotoModel::setup_virdis_values()

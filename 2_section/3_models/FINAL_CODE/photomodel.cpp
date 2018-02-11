@@ -21,20 +21,15 @@ PhotoModel::PhotoModel(QObject *parent)
 
 int PhotoModel::rowCount(const QModelIndex &parent) const
 {
-    // For list models only the root node (an invalid parent) should return the list's size. For all
-    // other (valid) parents, rowCount() should return 0 so that it does not become a tree model.
     if (parent.isValid())
         return 0;
-
     return colors.size();
 }
+
 
 QVariant PhotoModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
-        return QVariant();
-
-    if (index.row() > colors.size())
         return QVariant();
 
     if (role == Qt::DecorationRole)
@@ -45,8 +40,8 @@ QVariant PhotoModel::data(const QModelIndex &index, int role) const
 
 bool PhotoModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (data(index, role) != value)
-	{
+    if(data(index, role) != value)
+    {
         colors[index.row()] = value.value<QColor>();
         emit dataChanged(index, index, QVector<int>() << role);
         return true;
@@ -61,6 +56,7 @@ Qt::ItemFlags PhotoModel::flags(const QModelIndex &index) const
         return Qt::NoItemFlags;
 
     return Qt::ItemIsEnabled;
+
 }
 
 void PhotoModel::setup_virdis_values()

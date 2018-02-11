@@ -2,6 +2,9 @@
 #define PHOTOMODEL_H
 
 #include <QAbstractListModel>
+#include <QColor>
+#include <QIcon>
+
 
 class PhotoModel : public QAbstractListModel
 {
@@ -15,13 +18,16 @@ public:
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
-    // Add data:
-    bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+    // Editable:
+    bool setData(const QModelIndex &index, const QVariant &value,
+                 int role = Qt::EditRole) override;
 
-    // Remove data:
-    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+    Qt::ItemFlags flags(const QModelIndex& index) const override;
 
 private:
+    void setup_virdis_values();
+    QVector<QColor> colors;
+    QVector<QColor> _viridis_values;
 };
 
 #endif // PHOTOMODEL_H
