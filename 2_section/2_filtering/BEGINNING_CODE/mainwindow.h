@@ -8,7 +8,7 @@
 
 #include "photomodel.h"
 #include "picturefilter.h"
-#include "virdisdialog.h"
+#include "viridisdialog.h"
 
 
 class MainWindow : public QMainWindow
@@ -26,6 +26,7 @@ private slots:
 private:
     void setup_list_view_ui();
     void setup_tool_buttons_ui();
+    void update_button_icon(QColor color, QToolButton* button);
 
     QToolButton *min_button;
     QToolButton *max_button;

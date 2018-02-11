@@ -73,23 +73,24 @@ void MainWindow::setup_tool_buttons_ui()
 void MainWindow::set_minimum()
 {
     color_min = VirdisDialog::get_color(color_min);
-    QPixmap pix(20, 20);
-    pix.fill(color_min);
-    QIcon min_icon(pix);
-    min_button->setIcon(min_icon);
-
+    update_button_icon(color_min, min_button);
     qreal luminosity = get_luminosity(color_min);
-    // picture_filter->set_min_filter_value(luminosity);
+    // TODO: use luminosity value to filter model
 }
 
 void MainWindow::set_maximum()
 {
     color_max = VirdisDialog::get_color(color_max);
-    QPixmap pix(20, 20);
-    pix.fill(color_max);
-    QIcon max_icon(pix);
-    max_button->setIcon(max_icon);
-
+    update_button_icon(color_max, max_button);
     qreal luminosity = get_luminosity(color_max);
-    // picture_filter->set_max_filter_value(luminosity);
+    // TODO: use luminosity value to filter model
+}
+
+void MainWindow::update_button_icon(QColor color, QToolButton *button)
+{
+    QPixmap pix(20, 20);
+    pix.fill(color);
+
+    QIcon min_icon(pix);
+    button->setIcon(min_icon);
 }
