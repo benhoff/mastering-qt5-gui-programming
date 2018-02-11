@@ -4,7 +4,6 @@
 #include <QAbstractListModel>
 #include <QColor>
 #include <QIcon>
-#include "color_utils.h"
 
 
 class PhotoModel : public QAbstractListModel
@@ -29,7 +28,7 @@ private:
     void setup_virdis_values();
     QVector<QIcon> icons;
     QVector<QColor> colors;
-    QVector<QColor> _virdis_values;
+    QVector<QColor> _viridis_values;
 };
 
 #endif // PHOTOMODEL_H

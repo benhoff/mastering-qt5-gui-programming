@@ -6,19 +6,14 @@
 #include <QPainter>
 #include <QMouseEvent>
 #include <qdrawutil.h>
-#include "color_utils.h"
 
-class QColorLuminancePicker : public QWidget
+
+class ColorPicker : public QWidget
 {
     Q_OBJECT
-
 public:
-    QColorLuminancePicker(QColor color, QWidget* parent=0);
-    ~QColorLuminancePicker();
-
-    QColor color() const { return current_color; }
-
-    void set_color(QColor color);
+    ColorPicker(QColor color, QWidget* parent=0);
+    ~ColorPicker();
 
     QColor current_color;
 
@@ -33,11 +28,12 @@ protected:
 
 private:
     enum { foff = 3, coff = 4 }; //frame and contents offset
+    void set_color(QColor color);
 
     QColor y_to_color(int y);
     int color_to_y(QColor color);
 
     QPixmap *pix;
-    QVector<QColor> virdis_values;
+    QVector<QColor> viridis_values;
 };
 #endif // COLORPICKER_H

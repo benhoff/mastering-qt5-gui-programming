@@ -28,11 +28,10 @@ SOURCES += \
         mainwindow.cpp \
     photomodel.cpp \
     colorpicker.cpp \
-    virdisdialog.cpp
+    viridisdialog.cpp
 
 HEADERS += \
         mainwindow.h \
     photomodel.h \
-    color_utils.h \
     colorpicker.h \
-    virdisdialog.h
+    viridisdialog.h

@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include "virdisdialog.h"
+#include "viridisdialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -18,7 +18,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::change_color(const QModelIndex &index)
 {
-    QColor current_color = index.data(Qt::DecorationRole).value<QColor>();
+    QVariant data = index.data(Qt::DecorationRole);
+    QColor current_color = data.value<QColor>();
     QColor color = VirdisDialog::get_color(current_color);
 
     model->setData(index, color, Qt::DecorationRole);
