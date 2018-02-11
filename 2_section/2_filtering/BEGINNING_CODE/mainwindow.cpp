@@ -31,10 +31,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     list_view = new QListView();
     photo_model = new PhotoModel();
-
-    picture_filter = new QSortFilterProxyModel();
-    picture_filter->setSourceModel(photo_model);
-
     list_view->setModel(photo_model);
 
     setup_list_view_ui();
