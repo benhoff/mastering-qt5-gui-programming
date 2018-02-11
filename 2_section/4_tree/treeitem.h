@@ -3,6 +3,7 @@
 
 #include <QList>
 
+
 class TreeItem
 {
 public:

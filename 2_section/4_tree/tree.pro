@@ -26,12 +26,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    picturemodel.cpp \
-    treeitem.cpp \
-    test.cpp
+        treeitem.cpp \
+        picturemodel.cpp
 
 HEADERS += \
         mainwindow.h \
-    picturemodel.h \
-    treeitem.h \
-    test.h
+        treeitem.h \
+        picturemodel.h \
+    huegenerator.h

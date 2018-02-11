@@ -1,14 +1,14 @@
-#ifndef TEST_H
-#define TEST_H
+#ifndef PICTUREMODEL_H 
+#define PICTUREMODEL_H 
 
 #include <QAbstractItemModel>
 
-class test : public QAbstractItemModel
+class PictureModel: public QAbstractItemModel
 {
     Q_OBJECT
 
 public:
-    explicit test(QObject *parent = nullptr);
+    explicit PictureModel(QObject *parent = nullptr);
 
     // Header:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
@@ -26,4 +26,4 @@ public:
 private:
 };
 
-#endif // TEST_H
+#endif // PICTUREMODEL_H 
