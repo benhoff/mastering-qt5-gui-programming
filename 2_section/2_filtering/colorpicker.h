@@ -8,12 +8,12 @@
 #include <qdrawutil.h>
 
 
-class QColorLuminancePicker : public QWidget
+class ColorPicker : public QWidget
 {
     Q_OBJECT
 public:
-    QColorLuminancePicker(QColor color, QWidget* parent=0);
-    ~QColorLuminancePicker();
+    ColorPicker(QColor color, QWidget* parent=0);
+    ~ColorPicker();
 
     QColor current_color;
 

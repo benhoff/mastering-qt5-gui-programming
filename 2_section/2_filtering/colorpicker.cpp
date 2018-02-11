@@ -1,6 +1,6 @@
 #include "colorpicker.h"
 
-QColor QColorLuminancePicker::y_to_color(int y)
+QColor ColorPicker::y_to_color(int y)
 {
     int d = height() - 2*coff - 1;
     int index = 255 - (y - coff)*255/d;
@@ -8,7 +8,7 @@ QColor QColorLuminancePicker::y_to_color(int y)
 
 }
 
-int QColorLuminancePicker::color_to_y(QColor color)
+int ColorPicker::color_to_y(QColor color)
 {
     int index;
     for (QVector<QColor>::iterator it = viridis_values.begin(); it != viridis_values.end(); it++)
@@ -23,21 +23,21 @@ int QColorLuminancePicker::color_to_y(QColor color)
     return coff + (255-index)*d/255;
 }
 
-QColorLuminancePicker::~QColorLuminancePicker()
+ColorPicker::~ColorPicker()
 {
     delete pix;
 }
 
-void QColorLuminancePicker::mouseMoveEvent(QMouseEvent *m)
+void ColorPicker::mouseMoveEvent(QMouseEvent *m)
 {
     set_color(y_to_color(m->y()));
 }
-void QColorLuminancePicker::mousePressEvent(QMouseEvent *m)
+void ColorPicker::mousePressEvent(QMouseEvent *m)
 {
     set_color(y_to_color(m->y()));
 }
 
-void QColorLuminancePicker::set_color(QColor color)
+void ColorPicker::set_color(QColor color)
 {
     if (color == current_color)
         return;
@@ -50,13 +50,13 @@ void QColorLuminancePicker::set_color(QColor color)
     emit new_color(current_color);
 }
 
-QSize QColorLuminancePicker::sizeHint() const
+QSize ColorPicker::sizeHint() const
 {
     return QSize(50, 300);
 }
 
 
-void QColorLuminancePicker::paintEvent(QPaintEvent *)
+void ColorPicker::paintEvent(QPaintEvent *)
 {
     int w = width() - 5;
 
@@ -91,7 +91,7 @@ void QColorLuminancePicker::paintEvent(QPaintEvent *)
     p.drawPolygon(a);
 }
 
-QColorLuminancePicker::QColorLuminancePicker(QColor color, QWidget* parent)
+ColorPicker::ColorPicker(QColor color, QWidget* parent)
     :QWidget(parent)
 {
     pix = 0;

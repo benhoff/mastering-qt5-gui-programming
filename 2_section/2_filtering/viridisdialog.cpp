@@ -1,4 +1,4 @@
-#include "virdisdialog.h"
+#include "viridisdialog.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QPushButton>
@@ -6,19 +6,16 @@
 VirdisDialog::VirdisDialog(QColor color, QWidget *parent) :
     QDialog(parent)
 {
-    QVBoxLayout *main_layout = new QVBoxLayout();
-
-    picker = new QColorLuminancePicker(color);
-    main_layout->addWidget(picker);
-
-    QHBoxLayout *box_layout = new QHBoxLayout();
-
+    picker = new ColorPicker(color);
     QPushButton *ok =  new QPushButton("Ok");
-    box_layout->addWidget(ok);
+
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout->addWidget(picker);
+    layout->addWidget(ok);
+
     connect(ok, &QPushButton::clicked, this, &VirdisDialog::accept);
 
-    main_layout->addLayout(box_layout);
-    setLayout(main_layout);
+    setLayout(layout);
 }
 
 QColor VirdisDialog::get_current_color()

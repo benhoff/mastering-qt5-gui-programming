@@ -15,15 +15,15 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     colorpicker.cpp \
-    virdisdialog.cpp
+    viridisdialog.cpp
 
 HEADERS += \
         mainwindow.h \
     photomodel.h \
     picturefilter.h \
     colorpicker.h \
-    virdisdialog.h \
-    luminosity_calc.h
+    luminosity_calc.h \
+    viridisdialog.h
 
 RESOURCES += \
     ../pictures.qrc
