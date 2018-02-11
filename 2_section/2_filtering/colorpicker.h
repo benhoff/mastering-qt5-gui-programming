@@ -7,15 +7,6 @@
 #include <QMouseEvent>
 #include <qdrawutil.h>
 
-namespace{
-    inline QColor get_color(float r, float g, float b)
-    {
-        int red = (int)((r)*256.0);
-        int green = (int)((g)*256.0);
-        int blue = (int)((b)*256.0);
-        return QColor(red, green, blue);
-    }
-}
 
 class QColorLuminancePicker : public QWidget
 {
@@ -43,6 +34,6 @@ private:
     int color_to_y(QColor color);
 
     QPixmap *pix;
-    QVector<QColor> virdis_values;
+    QVector<QColor> viridis_values;
 };
 #endif // COLORPICKER_H
