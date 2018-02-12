@@ -17,8 +17,8 @@ public:
                       const QModelIndex &parent = QModelIndex()) const override;
     QModelIndex parent(const QModelIndex &index) const override;
 
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    int rowCount(const QModelIndex &parent=QModelIndex()) const override;
+    int columnCount(const QModelIndex &parent=QModelIndex()) const override;
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
@@ -26,8 +26,9 @@ public:
     void add_colors(ColorVec colors);
 
 private:
-    TreeItem* get_item(const QModelIndex &index) const;
-    TreeItem *root;
+    ColorTreeItem* get_item_from_index(const QModelIndex &index) const;
+
+    ColorTreeItem *root_item;
 };
 
 #endif // PICTUREMODEL_H 

@@ -2,27 +2,30 @@
 #define TREEITEM_H
 
 #include <QList>
+#include <QColor>
+#include <QVector>
+#include <QVariant>
 
-
-class TreeItem
+class ColorTreeItem
 {
 public:
-    explicit TreeItem(const QList<QVariant> &data, TreeItem *parentItem = 0);
-    ~TreeItem();
+    explicit ColorTreeItem(const QList<QVariant> &data, ColorTreeItem *parent = 0);
+    ~ColorTreeItem();
 
-    void appendChild(TreeItem *child);
-
-    TreeItem *child(int row);
+    ColorTreeItem *parent();
+    ColorTreeItem *child(int number);
     int childCount() const;
     int columnCount() const;
     QVariant data(int column) const;
-    int row() const;
-    TreeItem *parentItem();
+    int childNumber() const;
+    void add_colors(QList<QColor> colors);
+    void appendChild(ColorTreeItem* child);
 
 private:
-
-    QList<TreeItem*> m_childItems;
-    QList<QVariant> m_itemData;
-    TreeItem *m_parentItem;
+    QList<ColorTreeItem*> _child_items;
+    QList<QVariant> _color_data;
+    ColorTreeItem *_parent_item;
 };
+
+
 #endif // TREEITEM_H
