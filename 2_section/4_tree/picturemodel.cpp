@@ -102,7 +102,8 @@ void PictureModel::add_colors(ColorVec colors)
     root->appendChild(parent);
 
     VariantList child_data;
-    child_data << " ";
+    // add in a blank variant to move out from the parent column
+    child_data << QVariant();
     for (int i=1; i < colors.size(); i++)
     {
         QVariant c = colors[i];
