@@ -1,4 +1,4 @@
-#include "processmanager.h"
+#include "clientmanager.h"
 #include <iostream>
 
 ProcessManager::ProcessManager(int max_processes, QObject *parent) :
