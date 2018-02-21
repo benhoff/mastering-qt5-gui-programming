@@ -2,57 +2,20 @@
 #include <iostream>
 
 
-PictureModel::PictureModel(QObject *parent)
-    : QAbstractItemModel(parent)
+ColorTreeItem* PictureModel::get_item_from_index(const QModelIndex &index) const
 {
-    // root is empty
-    root_item = new ColorTreeItem(QList<QVariant>());
 }
 
-PictureModel::~PictureModel()
-{
-    delete root_item;
-}
-
-QModelIndex PictureModel::index(int row, int column, const QModelIndex &parent) const
-{
-    if (!hasIndex(row, column, parent))
-        return QModelIndex();
-
-    ColorTreeItem* parent_item = get_item_from_index(parent);
-    ColorTreeItem *child_item = parent_item->child(row);
-
-    if (child_item)
-        return createIndex(row, column, child_item);
-    else
-        return QModelIndex();
-}
 
 QModelIndex PictureModel::parent(const QModelIndex &index) const
 {
-    if (!index.isValid())
-        return QModelIndex();
-
-    ColorTreeItem *child_item = get_item_from_index(index);
-    ColorTreeItem *parent_item = child->parent();
-
-    if (parent_item == root_item)
-        return QModelIndex();
-
-    // By common convention, only items in the first column have children.
-    return createIndex(parent->childNumber(), 0, parent);
 }
 
-int PictureModel::rowCount(const QModelIndex &parent) const
+
+QModelIndex PictureModel::index(int row, int column, const QModelIndex &parent) const
 {
-    ColorTreeItem* parent_item = get_item_from_index(parent);
-    return parent_item->childCount();
 }
 
-int PictureModel::columnCount(const QModelIndex & /*parent*/) const
-{
-    return 12;
-}
 
 QVariant PictureModel::data(const QModelIndex &index, int role) const
 {
@@ -63,13 +26,13 @@ QVariant PictureModel::data(const QModelIndex &index, int role) const
     if (role == Qt::SizeHintRole)
         return QSize(50, 50);
 
-    // Get our item!
-    ColorTreeItem* item = get_item_from_index(index);
+    // FIXME: Implement!
+    ColorTreeItem* item = ;
 
     if (role == Qt::DecorationRole)
     {
-        // TODO: Implement
-        return item->data(index.column());
+        // FIXME: Implement!
+        return ;
     }
     else if (role == Qt::ToolTipRole)
     {
@@ -81,17 +44,6 @@ QVariant PictureModel::data(const QModelIndex &index, int role) const
 
     // Fallback for other ItemRoles is to return nothing
     return QVariant();
-}
-
-ColorTreeItem* PictureModel::get_item_from_index(const QModelIndex &index) const
-{
-    if (index.isValid())
-    {
-        ColorTreeItem* item = static_cast<ColorTreeItem*>(index.internalPointer());
-        if (item)
-            return item;
-    }
-    return root_item;
 }
 
 void PictureModel::add_colors(ColorVec colors)
@@ -107,4 +59,27 @@ Qt::ItemFlags PictureModel::flags(const QModelIndex &index) const
         return Qt::NoItemFlags;
 
     return Qt::ItemIsEnabled;
+}
+
+int PictureModel::rowCount(const QModelIndex &parent) const
+{
+    ColorTreeItem* parent_item = get_item_from_index(parent);
+    return parent_item->childCount();
+}
+
+int PictureModel::columnCount(const QModelIndex & /*parent*/) const
+{
+    return 12;
+}
+
+PictureModel::PictureModel(QObject *parent)
+    : QAbstractItemModel(parent)
+{
+    // root is empty
+    root_item = new ColorTreeItem(QList<QVariant>());
+}
+
+PictureModel::~PictureModel()
+{
+    delete root_item;
 }
