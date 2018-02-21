@@ -7,6 +7,7 @@
 #include <QTcpServer>
 #include <QDataStream>
 #include <QTcpSocket>
+#include <QTimer>
 
 
 class PushServer : public QObject
@@ -44,7 +45,8 @@ private slots:
         client_connection->disconnectFromHost();
 
         if (_operations.isEmpty())
-            emit finished();
+            // Need to give the client connection a second to write the last instruction as `write` is non-blocking
+            QTimer::singleShot(50, [this](){emit finished();});
     }
 
 signals:

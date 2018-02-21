@@ -28,13 +28,10 @@ void SocketManager::setup_sockets()
     for (int sock_num =0; sock_num < _total_sockets; sock_num++)
     {
         QTcpSocket *socket = new QTcpSocket();
-        _sockets.append(socket);
-
         QDataStream *in = new QDataStream();
-        _data_streams.append(in);
-
         in->setDevice(socket);
 
+        // --- start connection method ---
         connect(socket, &QIODevice::readyRead, [this, sock_num, socket, in](){
             in->startTransaction();
             QString work;
@@ -49,10 +46,15 @@ void SocketManager::setup_sockets()
 
             QTimer::singleShot(simulated_work_time, [this, sock_num](){reset_socket(sock_num);});
         });
+        // --- stop connection method ---
 
         connect(socket,
                 QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
                 [this, sock_num](QAbstractSocket::SocketError error){error_handler(error, sock_num);});
+
+        _sockets.append(socket);
+        _data_streams.append(in);
+
     }
 
     for (int i =0; i < _total_sockets; i++)
@@ -98,7 +100,7 @@ void SocketManager::error_handler(QAbstractSocket::SocketError error, int socket
     if (error == QAbstractSocket::ConnectionRefusedError)
     {
         QTimer::singleShot(1000, [this, socket_number](){reset_socket(socket_number);});
-        if (_random.bounded(10) == 0)
+        if (_random.bounded(_total_sockets) == 0)
             std::cout << "No host found, is the server running?" << std::endl;
     }
 }
