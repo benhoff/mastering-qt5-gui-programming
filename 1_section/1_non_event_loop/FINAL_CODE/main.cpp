@@ -4,6 +4,7 @@
 #include <QColor>
 #include <QFile>
 #include <QDir>
+#include <QRandomGenerator>
 
 #include "virdis_values.h"
 
@@ -15,8 +16,8 @@ int main()
     QDir directory = QDir::current();
     bool dir_exists = directory.cd("../../2_section");
 
-    // TODO: some kind of error message
     if (!dir_exists)
+        qfatal("Directory does not exist! Check your logic!");
         return 1;
 
     bool pictures_exists = directory.exists("pics");
@@ -32,13 +33,19 @@ int main()
     QString filepath = directory.absolutePath();
     std::cout << "at least a filepath" << std::endl;
 
+    QRandomGenerator random;
+
     for (int i=0; i < 100; i++)
     {
-        int random_number = qrand() % 255;
+        QImage image(100, 100, QImage::Format_ARGB32);
+        // NOTE: Not evenly distributed.
+        // int random_number = qrand() % 255;
+
+        int random_number = random.bounded(255);
         QColor color = colors[random_number];
 
-        QImage image(100, 100, QImage::Format_ARGB32);
         image.fill(color);
+
         QString file(filepath + "/" + QString::number(i) + ".png");
         std::cout << file.toStdString() << std::endl;
         image.save(file);
