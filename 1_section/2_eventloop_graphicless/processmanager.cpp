@@ -1,5 +1,4 @@
 #include "processmanager.h"
-#include <iostream>
 
 ProcessManager::ProcessManager(int max_processes, QObject *parent) :
     QObject(parent),
@@ -14,13 +13,13 @@ ProcessManager::ProcessManager(int max_processes, QObject *parent) :
 
 void ProcessManager::start()
 {
-    std::cout << "starting timer" << std::endl << std::endl;
+    qDebug() << "starting timer";
     _timer->start();
 }
 
 void ProcessManager::start_process()
 {
-    std::cout << "starting process # " << _num_process << std::endl;
+    qDebug() << "starting process # " << _num_process;
 
     QProcess *process = new QProcess(this);
     _processes.append(process);
@@ -42,17 +41,17 @@ void ProcessManager::start_process()
 
     if (_num_process == _max_processes)
     {
-        std::cout << std::endl << "max processes reached!" << std::endl;
+        qDebug() << "max processes reached!";
         _timer->stop();
     }
 }
 
 void ProcessManager::process_finished(int exit_code, QProcess::ExitStatus status)
 {
-    std::cout << "        Process finished!" << std::endl;
+    qDebug() << "        Process finished!";
 }
 
 void ProcessManager::error_handler(QProcess::ProcessError error)
 {
-    std::cout << "Error!" << std::endl;
+    qDebug() << "Error!";
 }
