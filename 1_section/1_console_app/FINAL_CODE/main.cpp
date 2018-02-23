@@ -6,6 +6,7 @@
 #include <QDir>
 #include <QRandomGenerator>
 #include <QDebug>
+#include <QStringList>
 
 #include "virdis_values.h"
 
@@ -35,8 +36,11 @@ int main()
 
     directory.cd("pics");
 
+    QStringList exclude_filenames;
+    exclude_filenames << "pictures.qrc";
+
     // Step 4: Remove all old pictures, if any
-    foreach(QString filepath, directory.entryList())
+    foreach(QString filepath, directory.entryList(exclude_filenames))
         directory.remove(filepath);
 
     QRandomGenerator random;
