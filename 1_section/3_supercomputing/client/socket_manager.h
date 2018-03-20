@@ -8,8 +8,14 @@
 #include <QRandomGenerator>
 #include <QPair>
 
-
-struct SocketPair{
+class SocketPair
+{
+public:
+    explict SocketPair()
+    {
+        input = new QTcpSocket();
+        output = new QTcpSocket();
+    }
     QTcpSocket *input;
     QTcpSocket *output;
 }

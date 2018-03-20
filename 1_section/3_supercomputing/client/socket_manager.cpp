@@ -18,13 +18,9 @@ void SocketManager::setup_sockets()
 {
     for (int sock_num =0; sock_num < _total_sockets; sock_num++)
     {
-        SocketPair socket_pair;
+        SocketPair socket_pair();
         _sockets.append(socket_pair);
 
-        // input is from the push server
-        socket_pair.input = new QTcpSocket();
-        // output is to the pull server
-        socket_pair.output = new QTcpSocket();
         socket_pair.output->connect(QHostAddress::LocalHost, 5001);
 
         QDataStream *in = new QDataStream();
