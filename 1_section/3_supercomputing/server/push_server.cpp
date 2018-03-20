@@ -16,7 +16,6 @@ void PushServer::send_work()
 {
     if (_operations.isEmpty())
     {
-    client_connection->disconnectFromHost();
         // Need to give the client connection a second to write the last instruction as `write` is non-blocking
         QTimer::singleShot(50, [this](){emit finished();});
         return;

@@ -32,9 +32,10 @@ private slots:
 private:
     void setup_sockets();
     void setup_socket_connections(QTcpSocket* socket, QDataStream* data_stream, int socket_number);
+    void _setup_error_handling(QTcpSocket *socket);
 
-    void reset_socket(int socket_number);
-    void do_work(QString work, int socket_number);
+    void get_more_work(int socket_number);
+    void do_work(QString work, SocketPair socket_pair, int socket_number);
 
     QVector<SocketPair> _sockets;
     QVector<QDataStream*> _data_streams;
