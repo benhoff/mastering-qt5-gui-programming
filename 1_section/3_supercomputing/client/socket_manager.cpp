@@ -56,7 +56,7 @@ void SocketManager::do_work(QString work, SocketPair socket_pair, int socket_num
     int simulated_work_time = _random.bounded(500);
     QTimer::singleShot(simulated_work_time, [this, socket_number](){get_more_work(socket_number);});
 
-    if (work.toInt() == 101)
+    if (work.toInt() == 100)
     {
         std::cout << "Time elasped: " << (float) _elasped_time.elapsed() / 1000 << " seconds" << std::endl;
         emit finished();
