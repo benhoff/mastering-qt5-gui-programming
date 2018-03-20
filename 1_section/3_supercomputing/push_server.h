@@ -14,7 +14,7 @@ class PushServer : public QObject
 {
     Q_OBJECT
 public:
-    explicit PushServer(int number_operations = 10,  QObject *parent=nullptr)
+    explicit PushServer(int number_operations = 100,  QObject *parent=nullptr)
         : QObject(parent)
     {
         std::cout << "Start Push server" << std::endl;
@@ -29,24 +29,20 @@ public:
 private slots:
     void send_work()
     {
-        QTcpSocket *client_connection = _server.nextPendingConnection();
-        connect(client_connection, &QAbstractSocket::disconnected, client_connection, &QObject::deleteLater);
+        // Check to see if we still have work to do first
+        if (_operations.isEmpty())
+        {
+            // Need to give the client connection a second to write the
+            // last instruction as `write` is non-blocking before finishing
+            QTimer::singleShot(50, [this](){emit finished();});
+            return;
+        }
 
-        QByteArray block;
-        QDataStream out(&block, QIODevice::WriteOnly);
+        QTcpSocket *client_connection = ;
+        QString operation = ;
 
-
-        QString operation = _operations.takeFirst();
-
-        out << operation;
         std::cout << "send work: " << operation.toInt() << std::endl;
 
-        client_connection->write(block);
-        client_connection->disconnectFromHost();
-
-        if (_operations.isEmpty())
-            // Need to give the client connection a second to write the last instruction as `write` is non-blocking
-            QTimer::singleShot(50, [this](){emit finished();});
     }
 
 signals:
