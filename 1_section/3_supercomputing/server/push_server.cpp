@@ -21,7 +21,7 @@ void PushServer::send_work()
         return;
     }
 
-    QTcpSocket *client_connection = _server.nextPendingConnection();
+    QTcpSocket *client_connection = ;
     QString operation = ;
 
     qDebug() << "send work: " << operation;
