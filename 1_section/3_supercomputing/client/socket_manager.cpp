@@ -23,16 +23,28 @@ void SocketManager::start()
     }
 }
 
+void SocketManager::setup_socket_connections(QTcpSocket *socket, QDataStream *data_stream, int socket_number)
+{
+    connect(socket, &QIODevice::readyRead, [](){});
+    connect(socket,
+            QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), [](){});
+}
+
 void SocketManager::setup_sockets()
 {
     for (int sock_num =0; sock_num < _total_sockets; sock_num++)
     {
-        QTcpSocket *socket = new QTcpSocket();
+        SocketPair socket_pair;
+        socket_pair.input = new QTcpSocket();
+        socket_pair.output = new QTcpSocket();
+
+        socket_pair.output->connect(QHostAddress::LocalHost, 5001);
+
         QDataStream *in = new QDataStream();
-        in->setDevice(socket);
+        in->setDevice(socket_pair.input);
 
         // --- start connection method ---
-        connect(socket, &QIODevice::readyRead, [this, sock_num, socket, in](){
+        connect(socket_pair.input, &QIODevice::readyRead, [this, sock_num, in](){
             in->startTransaction();
             QString work;
             *in >> work;
@@ -48,26 +60,20 @@ void SocketManager::setup_sockets()
         });
         // --- stop connection method ---
 
-        connect(socket,
+        connect(socket_pair.input,
                 QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
                 [this, sock_num](QAbstractSocket::SocketError error){error_handler(error, sock_num);});
 
-        _sockets.append(socket);
+        _sockets.append(socket_pair);
         _data_streams.append(in);
 
     }
 
-    for (int i =0; i < _total_sockets; i++)
-    {
-        QTcpSocket *socket = new QTcpSocket();
-        _sockets.append(socket);
-        socket->connectToHost(QHostAddress::LocalHost, 5001);
-    }
 }
 
 void SocketManager::reset_socket(int socket_number)
 {
-    QTcpSocket *socket = _sockets[socket_number];
+    QTcpSocket *socket = _sockets[socket_number].input;
     socket->abort();
     socket->connectToHost(QHostAddress::LocalHost, 5000);
 }
@@ -88,7 +94,7 @@ void SocketManager::do_work(QString work, int socket_number)
 
     int simulated_work_time = _random.bounded(500);
 
-    QTimer::singleShot(simulated_work_time, [this, block, work, socket_number](){
+    QTimer::singleShot(simulated_work_time, [this, block, socket_number](){
         QTcpSocket *socket = _sockets[socket_number + _total_sockets];
         if (socket->state() == QAbstractSocket::ConnectedState)
             socket->write(block);
