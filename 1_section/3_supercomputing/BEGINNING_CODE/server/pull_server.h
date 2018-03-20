@@ -25,7 +25,9 @@ private slots:
         connect(client_connection, &QAbstractSocket::disconnected, client_connection, &QObject::deleteLater);
         QDataStream in;
         in.setDevice(client_connection);
+
         in.startTransaction();
+
         QString result;
         in >> result;
 

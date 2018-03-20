@@ -9,13 +9,15 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    // NOTE: You can put these servers on separate comptuers if desired.
+    // NOTE: You can put the Push/Pull servers on separate comptuers if desired.
     PullServer pull_server;
-    PushServer push_server(101);
+
+    int number_of_operations = 101;
+    PushServer push_server(number_of_operations);
 
     if (!push_server.started)
     {
-        std::cout << "Server already started or ports used by other application! Exiting..." << std::endl;
+        qFatal("Server already started or ports used by other application! Exiting...");
         return 1;
     }
 
