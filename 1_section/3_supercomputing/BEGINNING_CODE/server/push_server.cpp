@@ -14,16 +14,14 @@ PushServer::PushServer(int number_operations, QObject *parent):
 
 void PushServer::send_work()
 {
+    QTcpSocket *client_connection = ;
+
     if (_operations.isEmpty())
     {
         // Need to give the client connection a second to write the last instruction as `write` is non-blocking
         QTimer::singleShot(50, [this](){emit finished();});
         return;
     }
-
-    QTcpSocket *client_connection = ;
-    connect(client_connection, &QAbstractSocket::disconnected, client_connection, &QObject::deleteLater);
-
     QString operation = ;
 
     qDebug() << "send work: " << operation;

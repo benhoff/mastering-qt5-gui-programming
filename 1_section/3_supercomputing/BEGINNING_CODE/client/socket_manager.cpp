@@ -20,54 +20,26 @@ void SocketManager::setup_sockets()
     {
         SocketPair socket_pair;
         _sockets.append(socket_pair);
+        _setup_error_handling(socket_pair, sock_num);
 
-        // input is from the push server
-        socket_pair.input = new QTcpSocket();
-        // output is to the pull server
-        socket_pair.output = new QTcpSocket();
-        socket_pair.output->connect(QHostAddress::LocalHost, 5001);
+        socket_pair.output->connectToHost(QHostAddress::LocalHost, 5001);
 
-        QDataStream *in = new QDataStream();
-        _data_streams.append(in);
+        QDataStream *data_stream = new QDataStream();
+        _data_streams.append(data_stream);
 
-        in->setDevice(socket_pair.input);
+        data_stream->setDevice(socket_pair.input);
 
-        connect(socket_pair.input, &QIODevice::readyRead, [this, sock_num, in](){
+        connect(socket_pair.input, &QIODevice::readyRead, [this, sock_num, data_stream, socket_pair](){
 
         });
     }
-
 }
 
-void SocketManager::start()
-{
-    std::cout << "Start" << std::endl << std::endl;
-    _elasped_time.start();
-    for (int i = 0; i < _total_sockets; i++)
-    {
-        QTcpSocket *socket = _sockets[i];
-        socket->connectToHost(QHostAddress::LocalHost, 5000);
-    }
-}
-
-void SocketManager::setup_socket_connections(QTcpSocket *socket, QDataStream *data_stream, int socket_number)
-{
-    connect(socket, &QIODevice::readyRead, [](){});
-    connect(socket,
-            QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error), [](){});
-}
-
-
-void SocketManager::get_more_work(int socket_number)
-{
-    QTcpSocket *socket = _sockets[socket_number].input;
-    socket->abort();
-    socket->connectToHost(QHostAddress::LocalHost, 5000);
-}
 
 void SocketManager::do_work(QString work, SocketPair socket_pair, int socket_number)
 {
-    // NOTE: in real code, work calculations would happen before we compress the data again.
+    // NOTE: in real code, work calculations would happen before we
+    // compress the data again.
 
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
@@ -76,17 +48,13 @@ void SocketManager::do_work(QString work, SocketPair socket_pair, int socket_num
 
     if (socket_pair.output->state() == QAbstractSocket::ConnectedState)
     {
-        socket_pair.output->write(block);
     }
 
     std::cout << "Did work: " << work.toStdString() << " with socket # " << socket_number << std::endl;
 
 
-    // int simulated_work_time = _random.bounded(500);
-    // QTimer::singleShot(simulated_work_time, [this, sock_num](){get_more_work(sock_num);});
-    QTimer::singleShot(simulated_work_time, [this, block, socket_number](){
-        QTcpSocket *socket = _sockets[socket_number + _total_sockets];
-    });
+    int simulated_work_time = _random.bounded(500);
+    QTimer::singleShot(simulated_work_time, [this, socket_number](){get_more_work(socket_number);});
 
     if (work.toInt() == 100)
     {
@@ -95,19 +63,38 @@ void SocketManager::do_work(QString work, SocketPair socket_pair, int socket_num
     }
 }
 
+
+void SocketManager::start()
+{
+    std::cout << "Start" << std::endl << std::endl;
+    _elasped_time.start();
+    for (int i = 0; i < _total_sockets; i++)
+    {
+        SocketPair socket_pair = _sockets[i];
+        socket_pair.input->connectToHost(QHostAddress::LocalHost, 5000);
+    }
+}
+
+void SocketManager::get_more_work(int socket_number)
+{
+    QTcpSocket *socket = _sockets[socket_number].input;
+    socket->abort();
+    socket->connectToHost(QHostAddress::LocalHost, 5000);
+}
+
 void SocketManager::error_handler(QAbstractSocket::SocketError error, int socket_number)
 {
     if (error == QAbstractSocket::ConnectionRefusedError)
     {
-        QTimer::singleShot(1000, [this, socket_number](){reset_socket(socket_number);});
+        QTimer::singleShot(1000, [this, socket_number](){get_more_work(socket_number);});
         if (_random.bounded(_total_sockets) == 0)
             std::cout << "No host found, is the server running?" << std::endl;
     }
 }
 
-void SocketManager::_setup_error_handling(QTcpSocket* socket)
+void SocketManager::_setup_error_handling(SocketPair socket_pair, int socket_number)
 {
-    connect(socket,
-            QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
-            [this, sock_num](QAbstractSocket::SocketError error){error_handler(error, sock_num);});
+    connect(socket_pair.input,
+                  QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::error),
+                  [this, socket_number](QAbstractSocket::SocketError error){error_handler(error, socket_number);});
 }
