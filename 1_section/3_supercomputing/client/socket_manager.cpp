@@ -23,21 +23,12 @@ void SocketManager::setup_sockets()
 
         socket_pair.output->connect(QHostAddress::LocalHost, 5001);
 
-        QDataStream *in = new QDataStream();
-        _data_streams.append(in);
+        QDataStream *data_stream = new QDataStream();
+        _data_streams.append(data_stream);
 
-        in->setDevice(socket_pair.input);
+        data_stream->setDevice(socket_pair.input);
 
         connect(socket_pair.input, &QIODevice::readyRead, [this, sock_num, in](){
-
-            in->startTransaction();
-            QString work;
-            *in >> work;
-
-            if (!in->commitTransaction())
-                return;
-
-            do_work(work, socket_pair, sock_num);
 
         });
     }
