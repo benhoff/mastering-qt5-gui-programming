@@ -30,6 +30,15 @@ void SocketManager::setup_sockets()
 
         connect(socket_pair.input, &QIODevice::readyRead, [this, sock_num, in](){
 
+            in->startTransaction();
+            QString work;
+            *in >> work;
+
+            if (!in->commitTransaction())
+                return;
+
+            do_work(work, socket_pair, sock_num);
+
         });
     }
 
@@ -63,7 +72,8 @@ void SocketManager::get_more_work(int socket_number)
 
 void SocketManager::do_work(QString work, SocketPair socket_pair, int socket_number)
 {
-    // NOTE: in real code, work calculations would happen before we compress the data again.
+    // NOTE: in real code, work calculations would happen before we
+    // compress the data again.
 
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
@@ -72,7 +82,6 @@ void SocketManager::do_work(QString work, SocketPair socket_pair, int socket_num
 
     if (socket_pair.output->state() == QAbstractSocket::ConnectedState)
     {
-        socket_pair.output->write(block);
     }
 
     std::cout << "Did work: " << work.toStdString() << " with socket # " << socket_number << std::endl;
