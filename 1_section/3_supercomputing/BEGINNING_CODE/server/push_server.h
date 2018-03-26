@@ -15,7 +15,7 @@ class PushServer : public QObject
 {
     Q_OBJECT
 public:
-    explicit PushServer(int number_operations = 10,  QObject *parent=nullptr);
+    explicit PushServer(int number_operations = 101,  QObject *parent=nullptr);
 
 private slots:
     void send_work();

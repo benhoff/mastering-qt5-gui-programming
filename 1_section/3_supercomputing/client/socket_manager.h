@@ -8,11 +8,17 @@
 #include <QRandomGenerator>
 #include <QPair>
 
-
-struct SocketPair{
+class SocketPair
+{
+public:
+    explicit SocketPair()
+    {
+        input = new QTcpSocket();
+        output = new QTcpSocket();
+    }
     QTcpSocket *input;
     QTcpSocket *output;
-}
+};
 
 class SocketManager : public QObject
 {
@@ -31,10 +37,10 @@ private slots:
 
 private:
     void setup_sockets();
-    void setup_socket_connections(QTcpSocket* socket, QDataStream* data_stream, int socket_number);
+    void _setup_error_handling(SocketPair socket_pair, int socket_number);
 
-    void reset_socket(int socket_number);
-    void do_work(QString work, int socket_number);
+    void get_more_work(int socket_number);
+    void do_work(QString work, SocketPair socket_pair, int socket_number);
 
     QVector<SocketPair> _sockets;
     QVector<QDataStream*> _data_streams;

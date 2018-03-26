@@ -6,7 +6,19 @@
 #include <QVector>
 #include <QElapsedTimer>
 #include <QRandomGenerator>
+#include <QPair>
 
+class SocketPair
+{
+public:
+    explicit SocketPair()
+    {
+        input = new QTcpSocket();
+        output = new QTcpSocket();
+    }
+    QTcpSocket *input;
+    QTcpSocket *output;
+};
 
 class SocketManager : public QObject
 {
@@ -25,10 +37,12 @@ private slots:
 
 private:
     void setup_sockets();
-    void reset_socket(int socket_number);
-    void do_work(QString work, int socket_number);
+    void _setup_error_handling(SocketPair socket_pair, int socket_number);
 
-    QVector<QTcpSocket*> _sockets;
+    void get_more_work(int socket_number);
+    void do_work(QString work, SocketPair socket_pair, int socket_number);
+
+    QVector<SocketPair> _sockets;
     QVector<QDataStream*> _data_streams;
     int _total_sockets;
     QRandomGenerator _random;
