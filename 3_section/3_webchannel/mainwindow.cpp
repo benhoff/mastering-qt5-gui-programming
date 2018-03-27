@@ -8,31 +8,49 @@
 #include "websocketclientwrapper.h"
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent),
-      _view(new QWebEngineView()),
-      _server(new QWebSocketServer(QStringLiteral("QWebChannel Standalone Example Server"),
-                                                          QWebSocketServer::NonSecureMode))
+    : QMainWindow(parent)
 {
-    setCentralWidget(_view);
-    QWebEnginePage *page = _view->page();
-    QWebEngineScript qwebchannel = get_script();
-    page->profile()->scripts()->insert(qwebchannel);
+    _view = new QWebEngineView();
     _view->load(QUrl("qrc:///index.html"));
-    _channel = new QWebChannel();
-    // page->scripts();
-    if (!_server->listen(QHostAddress::LocalHost, 12345))
-        qFatal("Failed to open web socket server.");
+    setCentralWidget(_view);
 
+    if (!_start_webserver())
+        qFatal("Failed to start web socket server on socket.");
+
+    _inject_webchannel_javascript();
+    _setup_webchannel_transport();
+}
+
+bool MainWindow::_start_webserver()
+{
+    _server = new QWebSocketServer(QStringLiteral("QWebChannel Standalone Example Server"),
+                                   QWebSocketServer::NonSecureMode);
+
+    return _server->listen(QHostAddress::LocalHost, 12345);
+}
+
+void MainWindow::_inject_webchannel_javascript()
+{
+    // get page
+    QWebEnginePage *page = _view->page();
+    // get javascript
+    QWebEngineScript qwebchannel = _get_webchannel_javascript();
+    // put javascript into page
+    page->profile()->scripts()->insert(qwebchannel);
+}
+
+void MainWindow::_setup_webchannel_transport()
+{
     // wrap WebSocket clients in QWebChannelAbstractTransport objects
     _client_wrapper = new WebSocketClientWrapper(_server);
 
+    _channel = new QWebChannel();
     QObject::connect(_client_wrapper, &WebSocketClientWrapper::clientConnected,
-                                _channel, &QWebChannel::connectTo);
-
+                     _channel, &QWebChannel::connectTo);
 }
 
 
-QWebEngineScript MainWindow::get_script()
+QWebEngineScript MainWindow::_get_webchannel_javascript()
 {
     QWebEngineScript script;
 
@@ -46,8 +64,8 @@ QWebEngineScript MainWindow::get_script()
 
     script.setSourceCode(javascript);
     script.setName("qwebchannel.js");
+    script.setRunsOnSubFrames(false);
     script.setWorldId(QWebEngineScript::MainWorld);
     script.setInjectionPoint(QWebEngineScript::DocumentCreation);
-    script.setRunsOnSubFrames(false);
     return script;
 }

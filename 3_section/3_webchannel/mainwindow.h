@@ -15,11 +15,11 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
 
 private:
-    QWebEngineScript get_script();
+    bool _start_webserver();
+    void _setup_webchannel_transport();
+    QWebEngineScript _get_webchannel_javascript();
+    void _inject_webchannel_javascript();
 
-signals:
-
-public slots:
 private:
     QWebEngineView *_view;
     QWebChannel *_channel;
