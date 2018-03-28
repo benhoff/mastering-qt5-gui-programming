@@ -16,10 +16,10 @@ public:
     void set_url();
 
 private:
-    void setup_central_widget();
+    void setup_central_widget_ui();
 
-    QWebEngineView *web_view;
     QWidget *central_widget;
+    QWebEngineView *web_view;
     QLineEdit* edit_bar;
 };
 
