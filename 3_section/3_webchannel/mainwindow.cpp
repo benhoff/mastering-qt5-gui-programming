@@ -14,52 +14,64 @@ MainWindow::MainWindow(QWidget *parent)
     _view->load(QUrl("qrc:///index.html"));
     setCentralWidget(_view);
 
-    if (!_start_webserver())
-        qFatal("Failed to start web socket server on socket.");
+    if (!_start_websocket_server())
+        qFatal("Failed to start web socket server on port 12345.");
 
-    _inject_webchannel_javascript();
+    _webchannel = new QWebChannel();
+    _webchannel->registerObject("signaler", &_my_signaler);
+
+    connect(&_my_signaler, &Signaler::launch_new_window,
+            this, &MainWindow::launch_new_window);
+
+    // method connects relevant signal to the `QWebChannel::connectTo` slot.
     _setup_webchannel_transport();
+    _inject_javascript_into_page();
 }
 
-bool MainWindow::_start_webserver()
+void MainWindow::launch_new_window()
 {
-    _server = new QWebSocketServer(QStringLiteral("QWebChannel Standalone Example Server"),
+
+}
+
+bool MainWindow::_start_websocket_server()
+{
+    // Note that the server is unsecured
+    _websocket_server = new QWebSocketServer(QStringLiteral("Example Server for QWebChannel"),
                                    QWebSocketServer::NonSecureMode);
 
-    return _server->listen(QHostAddress::LocalHost, 12345);
+    // we're listening on port 12345
+    return _websocket_server->listen(QHostAddress::LocalHost, 12345);
 }
 
-void MainWindow::_inject_webchannel_javascript()
+void MainWindow::_inject_javascript_into_page()
 {
-    // get page
-    QWebEnginePage *page = _view->page();
-    // get javascript
-    QWebEngineScript qwebchannel = _get_webchannel_javascript();
-    // put javascript into page
-    page->profile()->scripts()->insert(qwebchannel);
 }
 
 void MainWindow::_setup_webchannel_transport()
 {
-    // wrap WebSocket clients in QWebChannelAbstractTransport objects
-    _client_wrapper = new WebSocketClientWrapper(_server);
-
-    _channel = new QWebChannel();
+    // `WebSocketClientWrapper` wraps incoming WebSocket clients in QWebChannelAbstractTransport objects
+    // See `handleNewConnection` method in `WebSocketClientWrapper` for relevant code
+    _client_wrapper = new WebSocketClientWrapper(_websocket_server);
+    // Note that every websocket client that connects to our websocket server gets
+    // access to every published QObject.
     QObject::connect(_client_wrapper, &WebSocketClientWrapper::clientConnected,
-                     _channel, &QWebChannel::connectTo);
+                     _webchannel, &QWebChannel::connectTo);
 }
 
 
-QWebEngineScript MainWindow::_get_webchannel_javascript()
+QWebEngineScript MainWindow::_get_custom_javascript()
 {
     QWebEngineScript script;
 
+    // Read in `qwebchannel.js`
     QFile web_channel(":/qwebchannel.js");
     web_channel.open(QIODevice::ReadOnly);
     QByteArray javascript = web_channel.readAll();
+    // Read in `script.js`
     QFile custom_javascript(":/script.js");
     custom_javascript.open((QIODevice::ReadOnly));
 
+    // Note that the custom `script.js` is appended below `webchannel.js`
     javascript.append(custom_javascript.readAll());
 
     script.setSourceCode(javascript);
