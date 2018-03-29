@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
         qFatal("Failed to start web socket server on port 12345.");
 
     _webchannel = new QWebChannel();
-    _webchannel->registerObject("signaler", &_my_signaler);
+    _webchannel->registerObject("interactive", &_interactive);
 
     connect(&_my_signaler, &Signaler::launch_new_window,
             this, &MainWindow::launch_new_window);
@@ -36,11 +36,9 @@ void MainWindow::launch_new_window()
 bool MainWindow::_start_websocket_server()
 {
     // Note that the server is unsecured
-    _websocket_server = new QWebSocketServer(QStringLiteral("Example Server for QWebChannel"),
-                                   QWebSocketServer::NonSecureMode);
+    _websocket_server = ;
 
-    // we're listening on port 12345
-    return _websocket_server->listen(QHostAddress::LocalHost, 12345);
+    // listen on port 12345
 }
 
 void MainWindow::_inject_javascript_into_page()
@@ -61,12 +59,12 @@ void MainWindow::_setup_webchannel_transport()
 
 QWebEngineScript MainWindow::_get_custom_javascript()
 {
-    QWebEngineScript script;
-
     // Read in `qwebchannel.js`
     QFile web_channel(":/qwebchannel.js");
     web_channel.open(QIODevice::ReadOnly);
+
     QByteArray javascript = web_channel.readAll();
+
     // Read in `script.js`
     QFile custom_javascript(":/script.js");
     custom_javascript.open((QIODevice::ReadOnly));
@@ -74,6 +72,8 @@ QWebEngineScript MainWindow::_get_custom_javascript()
     // Note that the custom `script.js` is appended below `webchannel.js`
     javascript.append(custom_javascript.readAll());
 
+    QWebEngineScript script;
+    // Set our source code from `javascript` into our script
     script.setSourceCode(javascript);
     script.setName("qwebchannel.js");
     script.setRunsOnSubFrames(false);

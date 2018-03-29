@@ -9,11 +9,11 @@
 #include "websocketclientwrapper.h"
 
 
-class Signaler : public QObject
+class Interactor : public QObject
 {
     Q_OBJECT
 public:
-    explicit Signaler(QObject *parent = nullptr) :
+    explicit Interactor(QObject *parent = nullptr) :
         QObject(parent),
         who_changed_this_string("C++ Application")
     {
@@ -64,7 +64,7 @@ private:
     QWebSocketServer *_websocket_server;
     // WebSocket->QWebChannel interface
     WebSocketClientWrapper *_client_wrapper;
-    Signaler _my_signaler;
+    Interactor _interactive;
 };
 
 #endif // MAINWINDOW_H

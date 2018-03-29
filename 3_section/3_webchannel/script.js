@@ -1,19 +1,14 @@
 // http://doc.qt.io/qt-5/qtwebchannel-javascript.html
 
 window.onload = function() {
-    if (location.search != "")
-        var baseUrl = (/[?&]webChannelBaseUrl=([A-Za-z0-9\-:/\.]+)/.exec(location.search)[1]);
-    else
-        var baseUrl = "ws://localhost:12345";
-
-    var socket = new WebSocket(baseUrl);
+    var socket = new WebSocket("ws://localhost:12345");
 
     socket.onopen = function() {
         new QWebChannel(socket, function(channel) {
             // Connect to a signal:
             channel.objects.signaler.fired.connect(function() {
                 // This callback will be invoked whenever the signal is emitted on the C++/QML side.
-                console.log(arguments);
+                console.warning("Signal detected");
             });
 
             // To make the object known globally, assign it to the window object, i.e.:
