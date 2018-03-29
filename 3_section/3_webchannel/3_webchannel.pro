@@ -32,7 +32,8 @@ SOURCES += \
 HEADERS += \
     mainwindow.h \
     websockettransport.h \
-    websocketclientwrapper.h
+    websocketclientwrapper.h \
+    interactor.h
 
 RESOURCES += \
     resource.qrc

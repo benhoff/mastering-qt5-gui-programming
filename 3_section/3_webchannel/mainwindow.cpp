@@ -10,27 +10,23 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    // create our browser
     _view = new QWebEngineView();
+    // load a webpage
     _view->load(QUrl("qrc:///index.html"));
+    // set our browser as the central widget in the MainWindow
     setCentralWidget(_view);
 
     if (!_start_websocket_server())
         qFatal("Failed to start web socket server on port 12345.");
 
-    _webchannel = new QWebChannel();
+    _webchannel = ;
     _webchannel->registerObject("interactive", &_interactive);
 
-    connect(&_my_signaler, &Signaler::launch_new_window,
-            this, &MainWindow::launch_new_window);
-
-    // method connects relevant signal to the `QWebChannel::connectTo` slot.
+    // method connects relevant signal to the
+    // `QWebChannel::connectTo` slot.
     _setup_webchannel_transport();
     _inject_javascript_into_page();
-}
-
-void MainWindow::launch_new_window()
-{
-
 }
 
 bool MainWindow::_start_websocket_server()

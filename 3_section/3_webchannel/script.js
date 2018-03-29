@@ -1,38 +1,21 @@
-// http://doc.qt.io/qt-5/qtwebchannel-javascript.html
-
 window.onload = function() {
     var socket = new WebSocket("ws://localhost:12345");
 
     socket.onopen = function() {
         new QWebChannel(socket, function(channel) {
-            // Connect to a signal:
-            channel.objects.signaler.fired.connect(function() {
-                // This callback will be invoked whenever the signal is emitted on the C++/QML side.
-                console.warning("Signal detected");
-            });
+            // Get access to the object we published
 
-            // To make the object known globally, assign it to the window object, i.e.:
-            window.signaler = channel.objects.signaler;
+            // Connect to the `fired` signal
 
-            // change a value
-            signaler.who_changed_this_string = "Website";
+            // Connect the HTML button `onclick` to the C++ method `launch_new_window`
 
-            // invoke a method
-            signaler.call_me();
+            // change a C++ value
 
-            // Handle a return result as part of a method
-            signaler.call_me_and_handle_string(function(return_value) {
-                console.log(return_value);
-            });
+            // invoke a C++ method
 
-            // Read a property value, which is cached on the client side:
-            console.log(foo.myProperty);
+            // Handle a return result as part of a C++ method call
 
-            // To get notified about remote property changes,
-            // simply connect to the corresponding notify signal:
-            foo.onMyPropertyChanged.connect(function(newValue) {
-                console.log(newValue);
-            });
+            // Get notified when a C++ data value changes.
         });
     };
 
