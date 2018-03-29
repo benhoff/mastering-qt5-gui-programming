@@ -16,29 +16,32 @@ MainWindow::MainWindow(QWidget *parent)
     _view->load(QUrl("qrc:///index.html"));
     // set our browser as the central widget in the MainWindow
     setCentralWidget(_view);
+    _inject_javascript_into_page();
 
     if (!_start_websocket_server())
         qFatal("Failed to start web socket server on port 12345.");
 
-    _webchannel = ;
+    _webchannel = new QWebChannel();
     _webchannel->registerObject("interactive", &_interactive);
 
     // method connects relevant signal to the
     // `QWebChannel::connectTo` slot.
     _setup_webchannel_transport();
-    _inject_javascript_into_page();
 }
 
 bool MainWindow::_start_websocket_server()
 {
     // Note that the server is unsecured
-    _websocket_server = ;
-
+    _websocket_server = new QWebSocketServer("Example Server", QWebSocketServer::NonSecureMode);
     // listen on port 12345
+    return _websocket_server->listen(QHostAddress::LocalHost, 12345);
 }
 
 void MainWindow::_inject_javascript_into_page()
 {
+    QWebEnginePage *page = _view->page();
+    QWebEngineScript custom_javascript = _get_custom_javascript();
+    page->profile()->scripts()->insert(custom_javascript);
 }
 
 void MainWindow::_setup_webchannel_transport()
