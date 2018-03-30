@@ -6,7 +6,11 @@
 #include <QWebChannel>
 #include <QWebEngineScript>
 #include <QWebSocketServer>
+
 #include "websocketclientwrapper.h"
+#include "interactor.h"
+
+
 
 class MainWindow : public QMainWindow
 {
@@ -15,16 +19,26 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
 
 private:
-    bool _start_webserver();
+    bool _start_websocket_server();
     void _setup_webchannel_transport();
-    QWebEngineScript _get_webchannel_javascript();
-    void _inject_webchannel_javascript();
+    QWebEngineScript _get_custom_javascript();
+    void _inject_javascript_into_page();
 
 private:
+    // Our Web Browser
     QWebEngineView *_view;
-    QWebChannel *_channel;
-    QWebSocketServer *_server;
+
+    // The Web Channel
+    QWebChannel *_webchannel;
+
+    // Web Socket Server
+    QWebSocketServer *_websocket_server;
+
+    // WebSocket to QWebChannel interface (code not covered)
     WebSocketClientWrapper *_client_wrapper;
+
+    // Object to publish over QWebChannel
+    Interactor _interactive;
 };
 
 #endif // MAINWINDOW_H
