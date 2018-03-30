@@ -3,6 +3,7 @@
 #include <QWebEnginePage>
 #include <QWebEngineProfile>
 #include <QWebEngineScriptCollection>
+#include <QWebEngineSettings>
 #include <QUrl>
 #include <QFile>
 #include "websocketclientwrapper.h"
@@ -21,20 +22,22 @@ MainWindow::MainWindow(QWidget *parent)
         qFatal("Failed to start web socket server on port 12345.");
 
     _webchannel = ;
-    _webchannel->registerObject("interactive", &_interactive);
 
     // method connects relevant signal to the
     // `QWebChannel::connectTo` slot.
     _setup_webchannel_transport();
     _inject_javascript_into_page();
+
+    // set font size large!
+    _view->settings()->setFontSize(QWebEngineSettings::FontSize::MinimumFontSize, 26);
 }
 
 bool MainWindow::_start_websocket_server()
 {
     // Note that the server is unsecured
     _websocket_server = ;
-
     // listen on port 12345
+    return ;
 }
 
 void MainWindow::_inject_javascript_into_page()

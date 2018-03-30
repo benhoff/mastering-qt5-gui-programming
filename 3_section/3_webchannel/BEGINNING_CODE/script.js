@@ -5,17 +5,16 @@ window.onload = function() {
         new QWebChannel(socket, function(channel) {
             // Get access to the object we published
 
-            // Connect to the `fired` signal
+            // invoke a C++ slot
 
-            // Connect the HTML button `onclick` to the C++ method `launch_new_window`
+            // Handle a return result as part of a C++ method/slot call
+
+            // Connect to the `string_changed` signal
 
             // change a C++ value
 
-            // invoke a C++ method
+            // Add an event listener to the HTML button's `click` method which calls the C++ method `launch_new_window`
 
-            // Handle a return result as part of a C++ method call
-
-            // Get notified when a C++ data value changes.
         });
     };
 
@@ -25,5 +24,4 @@ window.onload = function() {
         socket.onerror = function(error) {
             console.error("web channel error: " + error);
         };
-    }
 };
