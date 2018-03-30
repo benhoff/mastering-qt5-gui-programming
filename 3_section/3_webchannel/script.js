@@ -6,34 +6,29 @@ window.onload = function() {
             // Get access to the object we published
             var interactive = channel.objects.interactive;
 
-            // Connect to the `fired` signal
-            interactive.fired.connect(function() {
-                console.warn("Signal `fired` detected");
-            });
-
-            // Connect the HTML button `onclick` to the C++ method `launch_new_window`
-            document.getElementById("myButton").onclick = interactive.launch_new_window;
-
-            // change a C++ value
-            console.log(interactive.who_changed_this_string);
-            interactive.who_changed_this_string = "The Website";
-
-            // invoke a C++ method
+            // invoke a C++ slot
             interactive.call_me_from_website();
 
-            // Handle a return result as part of a C++ method call
+            // Handle a return result as part of a C++ method/slot call
             interactive.call_me_returns_string(function(return_value) {
-                console.warn("I got this string: " + return_value);
+                console.log("My method returned this string: " + return_value);
             });
 
-            /*
-
-            // Get notified when a C++ data value changes.
-            interactive.this_string_changes_in_time.connect(function(new_value) {
-                console.warn("The string that has a single shot timer to change it, changed!");
-                console.warn("String now reads: " + new_value);
+            // Connect to the `string_changed` signal
+            interactive.string_changed.connect(function() {
+                console.log("String change detected! Who changed this string: " + interactive.who_changed_this_string);
             });
-            */
+
+            console.log("Who set this string? The " + interactive.who_changed_this_string);
+
+            // change a C++ value
+            interactive.who_changed_this_string = "The Website";
+
+            // Add an event listener to the HTML button's `click` method which calls the C++ method `launch_new_window`
+            document.getElementById("myButton").addEventListener("click", function() {
+                interactive.launch_new_window();
+            }, false);
+
         });
     };
 

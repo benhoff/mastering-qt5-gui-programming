@@ -3,6 +3,7 @@
 #include <QWebEnginePage>
 #include <QWebEngineProfile>
 #include <QWebEngineScriptCollection>
+#include <QWebEngineSettings>
 #include <QUrl>
 #include <QFile>
 #include "websocketclientwrapper.h"
@@ -27,6 +28,9 @@ MainWindow::MainWindow(QWidget *parent)
     // method connects relevant signal to the
     // `QWebChannel::connectTo` slot.
     _setup_webchannel_transport();
+
+    // set font size large!
+    _view->settings()->setFontSize(QWebEngineSettings::FontSize::MinimumFontSize, 26);
 }
 
 bool MainWindow::_start_websocket_server()

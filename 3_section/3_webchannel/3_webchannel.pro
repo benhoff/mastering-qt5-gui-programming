@@ -26,7 +26,8 @@ SOURCES += \
         main.cpp \
     mainwindow.cpp \
     websockettransport.cpp \
-    websocketclientwrapper.cpp
+    websocketclientwrapper.cpp \
+    interactor.cpp
 
 HEADERS += \
     mainwindow.h \
