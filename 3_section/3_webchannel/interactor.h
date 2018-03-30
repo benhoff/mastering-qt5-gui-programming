@@ -2,24 +2,26 @@
 #define INTERACTOR_H
 
 #include <QMessageBox>
+#include <QDebug>
 #include <QTimer>
 
 class Interactor : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString who_changed_this_string  READ get_string WRITE set_string NOTIFY string_changed)
 public:
 
     explicit Interactor(QObject *parent = nullptr) :
         QObject(parent)
     {
-        who_changed_this_string = "C++ Application";
+        _who_changed_this_string = "C++ Application";
         QTimer::singleShot(1000, [this](){emit fired();});
-        QTimer::singleShot(3000, [this](){this_string_changes_in_time = "Changed after 3 seconds!";});
     }
 
+public slots:
     void call_me_from_website()
     {
-        qDebug("Method Called!");
+        qDebug() << "Method Called!";
     }
 
     QString call_me_returns_string()
@@ -34,11 +36,23 @@ public:
         message_box.exec();
     }
 
-    QString who_changed_this_string;
-    QString this_string_changes_in_time;
 
 signals:
     void fired();
+    void string_changed();
+public:
+    void set_string(QString new_string)
+    {
+        _who_changed_this_string = new_string;
+    }
+
+    QString get_string()
+    {
+        return _who_changed_this_string;
+    }
+
+private:
+    QString _who_changed_this_string;
 };
 
 #endif // INTERACTOR_H

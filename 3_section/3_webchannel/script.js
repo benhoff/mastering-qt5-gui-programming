@@ -4,7 +4,7 @@ window.onload = function() {
     socket.onopen = function() {
         new QWebChannel(socket, function(channel) {
             // Get access to the object we published
-            window.interactive = channel.objects.interactive;
+            var interactive = channel.objects.interactive;
 
             // Connect to the `fired` signal
             interactive.fired.connect(function() {
@@ -15,6 +15,7 @@ window.onload = function() {
             document.getElementById("myButton").onclick = interactive.launch_new_window;
 
             // change a C++ value
+            console.log(interactive.who_changed_this_string);
             interactive.who_changed_this_string = "The Website";
 
             // invoke a C++ method
@@ -25,11 +26,14 @@ window.onload = function() {
                 console.warn("I got this string: " + return_value);
             });
 
+            /*
+
             // Get notified when a C++ data value changes.
             interactive.this_string_changes_in_time.connect(function(new_value) {
                 console.warn("The string that has a single shot timer to change it, changed!");
                 console.warn("String now reads: " + new_value);
             });
+            */
         });
     };
 

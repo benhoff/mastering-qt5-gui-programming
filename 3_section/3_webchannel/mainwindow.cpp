@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     if (!_start_websocket_server())
         qFatal("Failed to start web socket server on port 12345.");
 
-    _webchannel = new QWebChannel();
+    _webchannel = new QWebChannel(this);
     _webchannel->registerObject("interactive", &_interactive);
 
     // method connects relevant signal to the
