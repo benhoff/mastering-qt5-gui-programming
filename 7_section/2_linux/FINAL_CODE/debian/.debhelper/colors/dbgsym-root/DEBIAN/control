@@ -1,0 +1,13 @@
+Package: colors-dbgsym
+Source: colors
+Version: 1.0.0
+Auto-Built-Package: debug-symbols
+Architecture: amd64
+Maintainer: hoff <beohoff@gmail.com>
+Installed-Size: 35
+Depends: colors (= 1.0.0)
+Section: debug
+Priority: extra
+Homepage: <insert the upstream URL, if relevant>
+Description: Debug symbols for colors
+Build-Ids: 94a02badfe630987fc9053957c0ae4b8def40317
