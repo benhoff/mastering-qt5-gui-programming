@@ -18,7 +18,6 @@ public:
 
 public slots:
     void run();
-    void pause();
     void stop();
 
 private slots:
