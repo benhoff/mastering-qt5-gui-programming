@@ -6,8 +6,6 @@
 #include <QCamera>
 #include <QCameraInfo>
 #include <QAction>
-#include <QActionGroup>
-#include <QMediaRecorder>
 #include <QCameraImageCapture>
 #include <QCameraViewfinder>
 #include <QPushButton>
@@ -27,9 +25,7 @@ public:
 private:
     void _setup_ui();
     void _setup_camera_devices();
-    // QAudioProbe?
-    QScopedPointer<QCamera> _camera;
-    QScopedPointer<QCameraImageCapture> _image_capture;
+
     QCameraViewfinder *_camera_view;
     QWidget *_central_widget;
     QPushButton *_take_image_button;

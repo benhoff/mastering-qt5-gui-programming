@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include <QMenuBar>
 #include <QMenu>
+#include <QActionGroup>
 #include <QVBoxLayout>
 
 Q_DECLARE_METATYPE(QCameraInfo)
