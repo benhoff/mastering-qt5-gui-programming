@@ -3,7 +3,8 @@
 
 #include <QMainWindow>
 #include <QMediaPlayer>
-#include "myvideosurface.h"
+#include <QVideoWidget>
+#include <QMediaPlaylist>
 
 class MainWindow : public QMainWindow
 {
@@ -12,10 +13,11 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
 private:
     QMediaPlayer * _media_player;
-    MyVideoSurface *_video_surface;
+    // FIXME: might need to use a QScopedPointer
+    QMediaPlaylist *_media_playlist;
+    QVideoWidget * _video_widget;
 };
 
 #endif // MAINWINDOW_H

@@ -1,16 +1,15 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2018-04-14T20:59:21
+# Project created by QtCreator 2018-04-15T10:07:13
 #
 #-------------------------------------------------
 
-QT       += core gui multimedia multimediawidgets
+QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = 3_opencv
+TARGET = complex_playback
 TEMPLATE = app
-INCLUDEPATH += /usr/include/opencv
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -26,12 +25,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp \
-    myvideosurface.cpp
+        mainwindow.cpp
 
 HEADERS += \
-        mainwindow.h \
-    myvideosurface.h
-
-RESOURCES += \
-    resource.qrc
+        mainwindow.h

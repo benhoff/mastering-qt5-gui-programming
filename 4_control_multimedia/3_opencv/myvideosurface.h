@@ -2,54 +2,37 @@
 #define MYVIDEOSURFACE_H
 
 #include <QAbstractVideoSurface>
+#include <QVideoSurfaceFormat>
 #include <QPaintEvent>
+
+#include <opencv2/opencv.hpp>
 
 
 class MyVideoSurface : public QAbstractVideoSurface, public QWidget
 {
+    Q_OBJECT
 public:
     MyVideoSurface();
 
-    void paintEvent(QPaintEvent *event) override
-    {
-        QPainter painter;
-        painter.begin(this);
-        painter.setRenderHint(QPainter::Antialiasing);
-        painter.end();
-    }
+    void paintEvent(QPaintEvent *event) override;
 
     QList<QVideoFrame::PixelFormat> supportedPixelFormats(
-            QAbstractVideoBuffer::HandleType handleType = QAbstractVideoBuffer::NoHandle) const override
-    {
-        Q_UNUSED(handleType);
+            QAbstractVideoBuffer::HandleType handleType = QAbstractVideoBuffer::NoHandle) const override;
 
-        // Return the formats you will support
-        return QList<QVideoFrame::PixelFormat>() << QVideoFrame::Format_RGB565;
-    }
+    QVideoSurfaceFormat nearestFormat(const QVideoSurfaceFormat &format) const override;
 
-    QVideoSurfaceFormat nearestFormat(const QVideoSurfaceFormat &format) const override
-    {
+    bool present(const QVideoFrame &frame) override;
+    bool start(const QVideoSurfaceFormat &format) override;
+    void stop() override;
 
-    }
+private:
+    cv::CascadeClassifier _face_classifier;
 
-    bool present(const QVideoFrame &frame) override
-    {
-        Q_UNUSED(frame);
-        // Handle the frame and do your processing
-
-        return true;
-    }
-
-    bool start(const QVideoSurfaceFormat &format) override
-    {
-        return QAbstractVideoSurface::start(format);
-
-    }
-
-    void stop() override
-    {
-        QAbstractVideoSurface::stop();
-    }
+    QImage::Format _image_format;
+    QRect _target_rectangle;
+    QSize _image_size;
+    QRect _source_rectangle;
+    QVideoFrame _current_video_frame;
 
 };
 
