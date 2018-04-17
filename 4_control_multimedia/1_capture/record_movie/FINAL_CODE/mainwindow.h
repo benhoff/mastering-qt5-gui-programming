@@ -17,8 +17,8 @@ public:
     ~MainWindow();
 
 public slots:
-    void run();
-    void stop();
+    void record();
+    void stop_recording();
 
 private slots:
     void update_recorder_state(QMediaRecorder::State media_state);
@@ -30,13 +30,14 @@ private:
     void _setup_camera_devices();
     void _setup_ui();
 
-    QWidget *_central_widget;
-    QCameraViewfinder *_camera_view;
     QScopedPointer<QCamera> _camera;
     QScopedPointer<QMediaRecorder> _media_recorder;
-    QPushButton *_run_button;
-    QPushButton *_pause_button;
-    QPushButton *_stop_button;
+    QCameraViewfinder *_camera_view;
+
+    QWidget *_central_widget;
+
+    QPushButton *_record_button;
+    QPushButton *_stop_record_button;
 };
 
 #endif // MAINWINDOW_H

@@ -9,23 +9,36 @@ Q_DECLARE_METATYPE(QCameraInfo)
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    _central_widget = new QWidget();
     _camera_view = new QCameraViewfinder();
     _take_image_button = new QPushButton("Take Image");
+
+    _central_widget = new QWidget();
     setCentralWidget(_central_widget);
 
     _setup_ui();
     _setup_camera_devices();
     set_camera(QCameraInfo::defaultCamera());
-    connect(_take_image_button, &QPushButton::clicked, [this](){_image_capture.data()->capture();});
+
+    connect(_take_image_button,
+                 &QPushButton::clicked,
+                 [this]{_image_capture.data()->capture();});
+}
+
+void MainWindow::_setup_ui()
+{
+    QVBoxLayout *layout = new QVBoxLayout();
+    layout->addWidget(_camera_view);
+    layout->addWidget(_take_image_button);
+    _central_widget->setLayout(layout);
 }
 
 void MainWindow::_setup_camera_devices()
 {
-    QActionGroup *camera_group = new QActionGroup(this);
     const QList<QCameraInfo> cameras = QCameraInfo::availableCameras();
-    QMenuBar* menu_bar = menuBar();
+    QMenuBar *menu_bar = menuBar();
     QMenu *device_menu = menu_bar->addMenu("Devices");
+
+    QActionGroup *camera_group = new QActionGroup(this);
 
     for (const QCameraInfo &camera_info: cameras)
     {
@@ -45,13 +58,6 @@ MainWindow::~MainWindow()
 
 }
 
-void MainWindow::_setup_ui()
-{
-    QVBoxLayout *layout = new QVBoxLayout();
-    layout->addWidget(_camera_view);
-    layout->addWidget(_take_image_button);
-    _central_widget->setLayout(layout);
-}
 
 
 void MainWindow::set_camera_action(QAction *camera_action)
@@ -62,10 +68,9 @@ void MainWindow::set_camera_action(QAction *camera_action)
 void MainWindow::set_camera(const QCameraInfo &camera_info)
 {
     _camera.reset(new QCamera(camera_info));
-    // state changed
-    // error handeling
-
     _image_capture.reset(new QCameraImageCapture(_camera.data()));
+
+    _camera.data()->setCaptureMode(QCamera::CaptureStillImage);
     _camera.data()->setViewfinder(_camera_view);
     _camera.data()->start();
 }
