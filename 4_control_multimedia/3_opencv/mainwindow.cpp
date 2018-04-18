@@ -4,9 +4,9 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     _media_player = new QMediaPlayer();
-    _video_surface = new MyVideoSurface();
-    _media_player->setVideoOutput(_video_surface);
-    setCentralWidget(_video_surface);
+    _video_widget = new VideoWidget();
+    _media_player->setVideoOutput(_video_widget->get_videosurface());
+    setCentralWidget(_video_widget);
 
 
 }

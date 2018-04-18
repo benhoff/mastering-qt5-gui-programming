@@ -1,20 +1,18 @@
-#ifndef MYVIDEOSURFACE_H
-#define MYVIDEOSURFACE_H
+#ifndef VIDEOSURFACE_H
+#define VIDEOSURFACE_H
 
 #include <QAbstractVideoSurface>
 #include <QVideoSurfaceFormat>
-#include <QPaintEvent>
+#include <QWidget>
 
 #include <opencv2/opencv.hpp>
 
 
-class MyVideoSurface : public QAbstractVideoSurface, public QWidget
+class VideoSurface : public QAbstractVideoSurface
 {
     Q_OBJECT
 public:
-    MyVideoSurface();
-
-    void paintEvent(QPaintEvent *event) override;
+    VideoSurface(QObject *parent=nullptr);
 
     QList<QVideoFrame::PixelFormat> supportedPixelFormats(
             QAbstractVideoBuffer::HandleType handleType = QAbstractVideoBuffer::NoHandle) const override;
@@ -24,6 +22,9 @@ public:
     bool present(const QVideoFrame &frame) override;
     bool start(const QVideoSurfaceFormat &format) override;
     void stop() override;
+    void resize();
+    void paint(QPainter &painter);
+
 
 private:
     cv::CascadeClassifier _face_classifier;
@@ -33,7 +34,8 @@ private:
     QSize _image_size;
     QRect _source_rectangle;
     QVideoFrame _current_video_frame;
+    QWidget *_widget;
 
 };
 
-#endif // MYVIDEOSURFACE_H
+#endif // VIDEOSURFACE_H

@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QMediaPlayer>
-#include "myvideosurface.h"
+#include "videowidget.h"
 
 class MainWindow : public QMainWindow
 {
@@ -15,7 +15,7 @@ public:
 
 private:
     QMediaPlayer * _media_player;
-    MyVideoSurface *_video_surface;
+    VideoWidget *_video_widget;
 };
 
 #endif // MAINWINDOW_H
