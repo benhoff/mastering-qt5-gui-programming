@@ -2,7 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QMediaPlayer>
+#include <QPushButton>
+#include <QCamera>
+#include <QCameraInfo>
 #include "videowidget.h"
 
 class MainWindow : public QMainWindow
@@ -14,7 +16,17 @@ public:
     ~MainWindow();
 
 private:
-    QMediaPlayer * _media_player;
+
+    void set_camera(const QCameraInfo &camera_info);
+    void set_camera_action(QAction *camera_action);
+    void _setup_camera_devices();
+
+    QScopedPointer<QCamera> _camera;
+
+    QWidget *_central_widget;
+
+    QPushButton *_record_button;
+    QPushButton *_stop_record_button;
     VideoWidget *_video_widget;
 };
 

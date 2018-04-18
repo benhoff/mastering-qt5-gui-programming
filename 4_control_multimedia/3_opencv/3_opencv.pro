@@ -10,7 +10,16 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = 3_opencv
 TEMPLATE = app
-INCLUDEPATH += /usr/include/opencv2
+INCLUDEPATH += \
+    /usr/include/opencv2
+    /usr/include/opencv
+
+!contains(QT_CONFIG, no-pkg-config) {
+    CONFIG += link_pkgconfig
+    PKGCONFIG += opencv
+} else {
+    LIBS += -lopencv_core -lopencv_imgproc -lopencv_objdetect
+}
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings

@@ -3,16 +3,21 @@
 
 #include <QAbstractVideoSurface>
 #include <QVideoSurfaceFormat>
+#include <QImage>
 #include <QWidget>
 
 #include <opencv2/opencv.hpp>
 
+inline cv::Mat qimage_to_mat_ref(QImage &img, int format)
+{
+    return cv::Mat(img.height(), img.width(), format, img.bits(), img.bytesPerLine());
+}
 
 class VideoSurface : public QAbstractVideoSurface
 {
     Q_OBJECT
 public:
-    VideoSurface(QObject *parent=nullptr);
+    VideoSurface(QWidget *parent_widget, QObject *parent=nullptr);
 
     QList<QVideoFrame::PixelFormat> supportedPixelFormats(
             QAbstractVideoBuffer::HandleType handleType = QAbstractVideoBuffer::NoHandle) const override;
@@ -27,6 +32,8 @@ public:
 
 
 private:
+    cv::Mat _get_mat(QImage image);
+
     cv::CascadeClassifier _face_classifier;
 
     QImage::Format _image_format;

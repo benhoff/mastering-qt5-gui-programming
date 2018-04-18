@@ -1,9 +1,12 @@
 #include "videosurface.h"
 #include <QPainter>
+#include <QFile>
+#include <opencv2/imgproc/imgproc.hpp>
 
-VideoSurface::VideoSurface(QObject *parent) : QAbstractVideoSurface(parent)
+
+VideoSurface::VideoSurface(QWidget *parent_widget, QObject *parent) : QAbstractVideoSurface(parent), _widget(parent_widget)
 {
-    _face_classifier.load("://haarcascade_frontalface_default.xml");
+    _face_classifier.load(QFile("://haarcascade_frontalface_default.xml").fileName().toStdString().c_str());
 }
 
 void VideoSurface::resize()
@@ -68,11 +71,11 @@ void VideoSurface::stop()
 
 bool VideoSurface::start(const QVideoSurfaceFormat &format)
 {
-     const QImage::Format imageFormat = QVideoFrame::imageFormatFromPixelFormat(format.pixelFormat());
+     const QImage::Format image_format = QVideoFrame::imageFormatFromPixelFormat(format.pixelFormat());
      const QSize size = format.frameSize();
 
-     if (imageFormat != QImage::Format_Invalid && !size.isEmpty()) {
-         _image_format = imageFormat;
+     if (image_format != QImage::Format_Invalid && !size.isEmpty()) {
+         _image_format = image_format;
          _image_size = size;
          _source_rectangle = format.viewport();
 
@@ -85,6 +88,29 @@ bool VideoSurface::start(const QVideoSurfaceFormat &format)
      } else {
          return false;
      }
+}
+
+cv::Mat VideoSurface::_get_mat(QImage image)
+{
+    switch (image.format()) {
+    case QImage::Format_RGB888:{
+        // FIXME
+        cv::Mat result = qimage_to_mat_ref(image, CV_8UC3);
+        cv::cvtColor(result, result, CV_RGB2BGR);
+        return result;
+    }
+    case QImage::Format_Indexed8:{
+        return qimage_to_mat_ref(image, CV_8U);
+    }
+    case QImage::Format_RGB32:
+    case QImage::Format_ARGB32:
+    case QImage::Format_ARGB32_Premultiplied:{
+        return qimage_to_mat_ref(image, CV_8UC4);
+    }
+    default:
+        break;
+    }
+
 }
 
 void VideoSurface::paint(QPainter &painter)
@@ -103,6 +129,15 @@ void VideoSurface::paint(QPainter &painter)
                 _current_video_frame.height(),
                 _current_video_frame.bytesPerLine(),
                 _image_format);
+
+        cv::Mat frame = _get_mat(image);
+        cv::Mat grey_image;
+
+        cv::cvtColor(frame, grey_image, CV_BGR2GRAY);
+        cv::equalizeHist(grey_image, grey_image);
+        std::vector<cv::Rect> faces;
+        _face_classifier.detectMultiScale(grey_image, faces, 1.1, 2,  0|CV_HAAR_SCALE_IMAGE,
+                                          cv::Size(frame.cols/4, frame.rows/4)); // Minimum size of obj);
 
         painter.drawImage(_target_rectangle, image, _source_rectangle);
 
