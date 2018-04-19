@@ -13,9 +13,9 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
 private:
     QMediaPlayer * _media_player;
-    // FIXME: might need to use a QScopedPointer
     QMediaPlaylist *_media_playlist;
     QVideoWidget * _video_widget;
 };

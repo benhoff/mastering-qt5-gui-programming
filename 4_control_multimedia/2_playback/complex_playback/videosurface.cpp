@@ -1,18 +1,12 @@
 #include "videosurface.h"
 #include <QPainter>
-#include <QDir>
-#include <QCoreApplication>
-#include <QResource>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <iostream>
 #include <QDebug>
-#include <QGraphicsItem>
 
 
-VideoSurface::VideoSurface(QWidget *parent_widget, QObject *parent) : QAbstractVideoSurface(parent), _widget(parent_widget)
+VideoSurface::VideoSurface(QWidget *parent_widget, QObject *parent) :
+    QAbstractVideoSurface(parent),
+    _widget(parent_widget)
 {
-    QDir exeDir(QCoreApplication::applicationDirPath());
-    bool loaded = _face_classifier.load(exeDir.filePath("haarcascade_frontalface_default.xml").toStdString().c_str());
 }
 
 void VideoSurface::resize()
@@ -92,47 +86,6 @@ bool VideoSurface::start(const QVideoSurfaceFormat &format)
      }
 }
 
-cv::Mat VideoSurface::_get_mat(QImage image)
-{
-    cv::Mat result;
-    switch (image.format())
-    {
-    case QImage::Format_RGB888:{
-        result = qimage_to_mat_ref(image, CV_8UC3);
-        cv::cvtColor(result, result, CV_RGB2BGR);
-        break;
-    }
-    case QImage::Format_Indexed8:
-    {
-        result = qimage_to_mat_ref(image, CV_8U);
-        break;
-    }
-    case QImage::Format_ARGB32:
-    case QImage::Format_ARGB32_Premultiplied:
-    {
-        result = qimage_to_mat_ref(image, CV_8UC4);
-        break;
-    }
-    case QImage::Format_RGB32:
-    {
-        result = qimage_to_mat_ref(image, CV_8UC4);
-        cv::Mat new_result;
-        cv::cvtColor(result, new_result, cv::COLOR_BGRA2BGR);
-        cv::cvtColor(new_result, new_result, CV_BGR2GRAY);
-        cv::equalizeHist(new_result, new_result);
-        return new_result;
-    }
-    default:
-        qWarning() << "QImage format not handled in switch: " << image.format();
-        break;
-    }
-
-    cv::Mat new_result;
-    cv::cvtColor(result, new_result, CV_BGR2GRAY);
-    cv::equalizeHist(new_result, new_result);
-    return new_result;
-}
-
 void VideoSurface::paint(QPainter &painter)
 {
     if (_current_video_frame.map(QAbstractVideoBuffer::ReadOnly)) {
@@ -150,31 +103,8 @@ void VideoSurface::paint(QPainter &painter)
                 _current_video_frame.bytesPerLine(),
                 _image_format);
 
-        cv::Mat frame = _get_mat(image);
-
-        std::vector<cv::Rect> faces;
-        _face_classifier.detectMultiScale(frame, faces, 1.1, 2,  0|CV_HAAR_SCALE_IMAGE,
-                                          cv::Size(frame.cols/4, frame.rows/4)); // Minimum size of obj);
-
-         QPainter image_painter(&image);
-         QPen pen;
-         pen.setColor(Qt::red);
-         pen.setWidth(10);
-         image_painter.setPen(pen);
-        for (cv::Rect rectangle: faces)
-        {
-            QPoint top_left(rectangle.tl().x, rectangle.tl().y);
-
-            QPoint bottom_right(rectangle.br().x, rectangle.br().y);
-            QRect my_rectangle(top_left, bottom_right);
-            image_painter.drawRect(my_rectangle);
-        }
-
         painter.drawImage(_target_rectangle, image, _source_rectangle);
         painter.setTransform(old_transform);
-        qDebug() << "Size: " << faces.size();
-
-
 
         _current_video_frame.unmap();
     }

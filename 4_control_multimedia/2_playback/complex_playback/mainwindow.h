@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMediaPlayer>
+#include <QMediaPlaylist>
+#include "videowidget.h"
 
 class MainWindow : public QMainWindow
 {
@@ -10,6 +13,11 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+private:
+    QMediaPlayer * _media_player;
+    QMediaPlaylist *_media_playlist;
+    VideoWidget *_video_widget;
 };
 
 #endif // MAINWINDOW_H

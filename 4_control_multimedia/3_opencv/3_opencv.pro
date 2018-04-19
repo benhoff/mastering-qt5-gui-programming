@@ -4,16 +4,20 @@
 #
 #-------------------------------------------------
 
-QT       += core gui multimedia multimediawidgets
+QT       += core gui multimedia widgets
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-TARGET = 3_opencv
+TARGET = opencv
 TEMPLATE = app
+
+# https://wiki.qt.io/How_to_setup_Qt_and_openCV_on_Windows
+
+# NOTE: for windows need to add the correct include path!
+# INCLUDEPATH += D:\opencv\build\include
 INCLUDEPATH += \
     /usr/include/opencv2
-    /usr/include/opencv
 
+
+ # NOTE: see here for windows http://doc.qt.io/qt-5/qmake-variable-reference.html#libs
 !contains(QT_CONFIG, no-pkg-config) {
     CONFIG += link_pkgconfig
     PKGCONFIG += opencv
@@ -32,6 +36,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+# https://stackoverflow.com/questions/19066593/copy-a-file-to-build-directory-after-compiling-project-with-qt
 
 SOURCES += \
         main.cpp \
@@ -44,5 +49,9 @@ HEADERS += \
     videowidget.h \
     videosurface.h
 
-RESOURCES += \
-    resource.qrc
+# https://stackoverflow.com/a/39234363/2701402
+copydata.commands = $(COPY_FILE) \"$$shell_path($$PWD\\haarcascade_frontalface_default.xml)\" \"$$shell_path($$OUT_PWD)\"
+first.depends = $(first) copydata
+export(first.depends)
+export(copydata.commands)
+QMAKE_EXTRA_TARGETS += first copydata
