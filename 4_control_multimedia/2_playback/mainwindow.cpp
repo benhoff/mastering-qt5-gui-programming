@@ -11,6 +11,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     _media_player->setVideoOutput(_video_widget);
     setCentralWidget(_video_widget);
+
+    // play on media player?
 }
 
 MainWindow::~MainWindow()
