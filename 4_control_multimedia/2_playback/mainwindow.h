@@ -18,6 +18,7 @@ public:
 
 private slots:
     void trigger_media_file_dialog();
+    void update_button_state(QMediaPlayer::State state);
 
 private:
     void _setup_ui();
