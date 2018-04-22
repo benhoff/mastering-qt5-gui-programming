@@ -3,6 +3,7 @@
 #include <QVBoxLayout>
 #include <QActionGroup>
 #include <QMenuBar>
+#include <Qt3DRender/QCamera>
 
 Q_DECLARE_METATYPE(QCameraInfo)
 
@@ -10,18 +11,18 @@ Q_DECLARE_METATYPE(QCameraInfo)
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    Qt3DExtras::Qt3DWindow *view = new Qt3DExtras::Qt3DWindow();
+    _view = new Qt3DExtras::Qt3DWindow();
     // FIXME
-    _central_widget = QWidget::createWindowContainer(view);
+    _central_widget = QWidget::createWindowContainer(_view);
     
     setCentralWidget(_central_widget);
-    Qt3DCore::QEntity *root_entity = new Qt3DCore::QEntity();
-    Qt3DRender::QCamera *camera_entity = view->camera();
+    _root_entity = new Qt3DCore::QEntity();
+    Qt3DRender::QCamera *camera_entity = _view->camera();
     // set camera perspective, position, up vector, view center
     
     // QTexture2D is the winner. Should probably let the VideoSurface hold onto it.
 
-    view->setRootEntity(root_entity);
+    _view->setRootEntity(_root_entity);
     _setup_camera_devices();
 
     set_camera(QCameraInfo::defaultCamera());
@@ -66,6 +67,6 @@ void MainWindow::set_camera_action(QAction *camera_action)
 void MainWindow::set_camera(const QCameraInfo &camera_info)
 {
     _camera.reset(new QCamera(camera_info));
-    _camera.data()->setViewfinder(_video_widget->get_videosurface());
+    // _camera.data()->setViewfinder(_video_widget->get_videosurface());
     _camera.data()->start();
 }

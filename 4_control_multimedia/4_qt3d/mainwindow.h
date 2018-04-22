@@ -5,7 +5,8 @@
 #include <QPushButton>
 #include <QCamera>
 #include <QCameraInfo>
-#include "videowidget.h"
+#include <Qt3DCore/QEntity>
+#include <Qt3DExtras/qt3dwindow.h>
 
 class MainWindow : public QMainWindow
 {
@@ -27,7 +28,8 @@ private:
 
     QPushButton *_record_button;
     QPushButton *_stop_record_button;
-    VideoWidget *_video_widget;
+    Qt3DExtras::Qt3DWindow *_view;
+    Qt3DCore::QEntity *_root_entity;
 };
 
 #endif // MAINWINDOW_H

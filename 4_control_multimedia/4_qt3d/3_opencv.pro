@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui multimedia widgets
+QT       += core gui multimedia widgets 3dcore 3drender 3dextras
 
 TARGET = opencv
 TEMPLATE = app
@@ -41,12 +41,10 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    videowidget.cpp \
     videosurface.cpp
 
 HEADERS += \
         mainwindow.h \
-    videowidget.h \
     videosurface.h
 
 # https://stackoverflow.com/a/39234363/2701402

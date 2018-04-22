@@ -8,32 +8,108 @@
 #include <QDebug>
 #include <QGraphicsItem>
 
+// Paints an RGB32 frame
+static const char *qt_arbfp_xrgbShaderProgram =
+    "!!ARBfp1.0\n"
+    "PARAM matrix[4] = { program.local[0..2],"
+    "{ 0.0, 0.0, 0.0, 1.0 } };\n"
+    "TEMP xrgb;\n"
+    "TEX xrgb.xyz, fragment.texcoord[0], texture[0], 2D;\n"
+    "MOV xrgb.w, matrix[3].w;\n"
+    "DP4 result.color.x, xrgb.zyxw, matrix[0];\n"
+    "DP4 result.color.y, xrgb.zyxw, matrix[1];\n"
+    "DP4 result.color.z, xrgb.zyxw, matrix[2];\n"
+    "END";
 
-VideoSurface::VideoSurface(QWidget *parent_widget, QObject *parent) : QAbstractVideoSurface(parent), _widget(parent_widget)
+// Paints an ARGB frame.
+static const char *qt_arbfp_argbShaderProgram =
+    "!!ARBfp1.0\n"
+    "PARAM matrix[4] = { program.local[0..2],"
+    "{ 0.0, 0.0, 0.0, 1.0 } };\n"
+    "TEMP argb;\n"
+    "TEX argb, fragment.texcoord[0], texture[0], 2D;\n"
+    "MOV argb.w, matrix[3].w;\n"
+    "DP4 result.color.x, argb.zyxw, matrix[0];\n"
+    "DP4 result.color.y, argb.zyxw, matrix[1];\n"
+    "DP4 result.color.z, argb.zyxw, matrix[2];\n"
+    "TEX result.color.w, fragment.texcoord[0], texture, 2D;\n"
+    "END";
+
+// Paints an RGB(A) frame.
+static const char *qt_arbfp_rgbShaderProgram =
+    "!!ARBfp1.0\n"
+    "PARAM matrix[4] = { program.local[0..2],"
+    "{ 0.0, 0.0, 0.0, 1.0 } };\n"
+    "TEMP rgb;\n"
+    "TEX rgb, fragment.texcoord[0], texture[0], 2D;\n"
+    "MOV rgb.w, matrix[3].w;\n"
+    "DP4 result.color.x, rgb, matrix[0];\n"
+    "DP4 result.color.y, rgb, matrix[1];\n"
+    "DP4 result.color.z, rgb, matrix[2];\n"
+    "TEX result.color.w, fragment.texcoord[0], texture, 2D;\n"
+    "END";
+
+// Paints a YUV420P or YV12 frame.
+static const char *qt_arbfp_yuvPlanarShaderProgram =
+    "!!ARBfp1.0\n"
+    "PARAM matrix[4] = { program.local[0..2],"
+    "{ 0.0, 0.0, 0.0, 1.0 } };\n"
+    "TEMP yuv;\n"
+    "TEX yuv.x, fragment.texcoord[0], texture[0], 2D;\n"
+    "TEX yuv.y, fragment.texcoord[0], texture[1], 2D;\n"
+    "TEX yuv.z, fragment.texcoord[0], texture[2], 2D;\n"
+    "MOV yuv.w, matrix[3].w;\n"
+    "DP4 result.color.x, yuv, matrix[0];\n"
+    "DP4 result.color.y, yuv, matrix[1];\n"
+    "DP4 result.color.z, yuv, matrix[2];\n"
+    "END";
+
+// Paints a YUV444 frame.
+static const char *qt_arbfp_xyuvShaderProgram =
+    "!!ARBfp1.0\n"
+    "PARAM matrix[4] = { program.local[0..2],"
+    "{ 0.0, 0.0, 0.0, 1.0 } };\n"
+    "TEMP ayuv;\n"
+    "TEX ayuv, fragment.texcoord[0], texture[0], 2D;\n"
+    "MOV ayuv.x, matrix[3].w;\n"
+    "DP4 result.color.x, ayuv.yzwx, matrix[0];\n"
+    "DP4 result.color.y, ayuv.yzwx, matrix[1];\n"
+    "DP4 result.color.z, ayuv.yzwx, matrix[2];\n"
+    "END";
+
+// Paints a AYUV444 frame.
+static const char *qt_arbfp_ayuvShaderProgram =
+    "!!ARBfp1.0\n"
+    "PARAM matrix[4] = { program.local[0..2],"
+    "{ 0.0, 0.0, 0.0, 1.0 } };\n"
+    "TEMP ayuv;\n"
+    "TEX ayuv, fragment.texcoord[0], texture[0], 2D;\n"
+    "MOV ayuv.x, matrix[3].w;\n"
+    "DP4 result.color.x, ayuv.yzwx, matrix[0];\n"
+    "DP4 result.color.y, ayuv.yzwx, matrix[1];\n"
+    "DP4 result.color.z, ayuv.yzwx, matrix[2];\n"
+    "TEX result.color.w, fragment.texcoord[0], texture, 2D;\n"
+    "END";
+
+VideoSurface::VideoSurface(QObject *parent)
+    : QAbstractVideoSurface(parent)
+    ,_scan_line_direction(QVideoSurfaceFormat::TopToBottom)
+    , _mirrored(false)
+    , _color_space(QVideoSurfaceFormat::YCbCr_BT601)
+    , _texture_format(0)
+    , _texture_internal_format(0)
+    , _texture_type(0)
+    , _texture_count(0)
+    , _yuv(false)
 {
     QDir exeDir(QCoreApplication::applicationDirPath());
     bool loaded = _face_classifier.load(exeDir.filePath("haarcascade_frontalface_default.xml").toStdString().c_str());
+    Q_UNUSED(loaded)
 }
 
-void VideoSurface::resize()
-{
-    QSize size = surfaceFormat().sizeHint();
-    // scale the size of things
-    size.scale(_widget->size().boundedTo(size), Qt::KeepAspectRatio);
-
-    _target_rectangle = QRect(QPoint(0, 0), size);
-    // align the rectangle in the center
-    _target_rectangle.moveCenter(_widget->rect().center());
-}
-
-
-QVideoSurfaceFormat VideoSurface::nearestFormat(const QVideoSurfaceFormat &format) const
-{
-}
 
 QList<QVideoFrame::PixelFormat> VideoSurface::supportedPixelFormats(QAbstractVideoBuffer::HandleType handleType) const
 {
-    /*
     if (handleType == QAbstractVideoBuffer::NoHandle)
     {
         return QList<QVideoFrame::PixelFormat>()
@@ -47,12 +123,6 @@ QList<QVideoFrame::PixelFormat> VideoSurface::supportedPixelFormats(QAbstractVid
             << QVideoFrame::Format_YUV444
             << QVideoFrame::Format_YV12
             << QVideoFrame::Format_YUV420P;
-       */
-        return QList<QVideoFrame::PixelFormat>()
-                << QVideoFrame::Format_RGB32
-                << QVideoFrame::Format_ARGB32
-                << QVideoFrame::Format_ARGB32_Premultiplied
-                << QVideoFrame::Format_RGB24;
     } else
         return QList<QVideoFrame::PixelFormat>();
 }
@@ -68,27 +138,113 @@ bool VideoSurface::present(const QVideoFrame &frame)
         return false;
     }
     else {
-        _current_video_frame = frame;
-	//  glTexImage2D
-	// https://github.com/qt/qtmultimedia/blob/5.11/src/multimediawidgets/qpaintervideosurface.cpp#L400
-        _widget->repaint(_target_rectangle);
-
+        // FIXME: implementation this is being based on uses helper method `setCurrentFrame`
+        // see: https://github.com/qt/qtmultimedia/blob/5.11/src/multimediawidgets/qpaintervideosurface.cpp#L384
+        set_current_frame(frame);
         return true;
     }
 }
 
 void VideoSurface::stop()
 {
-    _current_video_frame = QVideoFrame();
-    _target_rectangle = QRect();
+    // TODO: delete all texutres and remove all structures
     QAbstractVideoSurface::stop();
-    _widget->update();
 }
+
+static const char *qt_glsl_vertexShaderProgram =
+        "attribute highp vec4 vertexCoordArray;\n"
+        "attribute highp vec2 textureCoordArray;\n"
+        "uniform highp mat4 positionMatrix;\n"
+        "varying highp vec2 textureCoord;\n"
+        "void main(void)\n"
+        "{\n"
+        "   gl_Position = positionMatrix * vertexCoordArray;\n"
+        "   textureCoord = textureCoordArray;\n"
+        "}\n";
+
+// Paints an RGB32 frame
+static const char *qt_glsl_xrgbShaderProgram =
+        "uniform sampler2D texRgb;\n"
+        "uniform mediump mat4 colorMatrix;\n"
+        "varying highp vec2 textureCoord;\n"
+        "void main(void)\n"
+        "{\n"
+        "    highp vec4 color = vec4(texture2D(texRgb, textureCoord.st).bgr, 1.0);\n"
+        "    gl_FragColor = colorMatrix * color;\n"
+        "}\n";
+
+// Paints an ARGB frame.
+static const char *qt_glsl_argbShaderProgram =
+        "uniform sampler2D texRgb;\n"
+        "uniform mediump mat4 colorMatrix;\n"
+        "varying highp vec2 textureCoord;\n"
+        "void main(void)\n"
+        "{\n"
+        "    highp vec4 color = vec4(texture2D(texRgb, textureCoord.st).bgr, 1.0);\n"
+        "    color = colorMatrix * color;\n"
+        "    gl_FragColor = vec4(color.rgb, texture2D(texRgb, textureCoord.st).a);\n"
+        "}\n";
+
+// Paints an RGB(A) frame.
+static const char *qt_glsl_rgbShaderProgram =
+        "uniform sampler2D texRgb;\n"
+        "uniform mediump mat4 colorMatrix;\n"
+        "varying highp vec2 textureCoord;\n"
+        "void main(void)\n"
+        "{\n"
+        "    highp vec4 color = vec4(texture2D(texRgb, textureCoord.st).rgb, 1.0);\n"
+        "    color = colorMatrix * color;\n"
+        "    gl_FragColor = vec4(color.rgb, texture2D(texRgb, textureCoord.st).a);\n"
+        "}\n";
+
+// Paints a YUV420P or YV12 frame.
+static const char *qt_glsl_yuvPlanarShaderProgram =
+        "uniform sampler2D texY;\n"
+        "uniform sampler2D texU;\n"
+        "uniform sampler2D texV;\n"
+        "uniform mediump mat4 colorMatrix;\n"
+        "varying highp vec2 textureCoord;\n"
+        "void main(void)\n"
+        "{\n"
+        "    highp vec4 color = vec4(\n"
+        "           texture2D(texY, textureCoord.st).r,\n"
+        "           texture2D(texU, textureCoord.st).r,\n"
+        "           texture2D(texV, textureCoord.st).r,\n"
+        "           1.0);\n"
+        "    gl_FragColor = colorMatrix * color;\n"
+        "}\n";
+
+// Paints a YUV444 frame.
+static const char *qt_glsl_xyuvShaderProgram =
+        "uniform sampler2D texRgb;\n"
+        "uniform mediump mat4 colorMatrix;\n"
+        "varying highp vec2 textureCoord;\n"
+        "void main(void)\n"
+        "{\n"
+        "    highp vec4 color = vec4(texture2D(texRgb, textureCoord.st).gba, 1.0);\n"
+        "    gl_FragColor = colorMatrix * color;\n"
+        "}\n";
+
+// Paints a AYUV444 frame.
+static const char *qt_glsl_ayuvShaderProgram =
+        "uniform sampler2D texRgb;\n"
+        "uniform mediump mat4 colorMatrix;\n"
+        "varying highp vec2 textureCoord;\n"
+        "void main(void)\n"
+        "{\n"
+        "    highp vec4 color = vec4(texture2D(texRgb, textureCoord.st).gba, 1.0);\n"
+        "    color = colorMatrix * color;\n"
+        "    gl_FragColor = vec4(color.rgb, texture2D(texRgb, textureCoord.st).r);\n"
+        "}\n";
 
 bool VideoSurface::start(const QVideoSurfaceFormat &format)
 {
-     if (format.handleType() != QAbstractVideoBuffer::NoHandle)
-	     qFatal("This won't work");
+        const char *program = 0;
+     if (format.handleType() != QAbstractVideoBuffer::NoHandle) {
+         qFatal("This won't work");
+         return false;
+     }
+     switch (format.pixelFormat()){
         case QVideoFrame::Format_RGB32:
             initRgbTextureInfo(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, format.frameSize());
             program = qt_arbfp_xrgbShaderProgram;
@@ -116,12 +272,12 @@ bool VideoSurface::start(const QVideoSurfaceFormat &format)
         case QVideoFrame::Format_YUV444:
             initRgbTextureInfo(GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, format.frameSize());
             program = qt_arbfp_xyuvShaderProgram;
-            m_yuv = true;
+            _yuv = true;
             break;
         case QVideoFrame::Format_AYUV444:
             initRgbTextureInfo(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, format.frameSize());
             program = qt_arbfp_ayuvShaderProgram;
-            m_yuv = true;
+            _yuv = true;
             break;
         case QVideoFrame::Format_YV12:
             initYv12TextureInfo(format.frameSize());
@@ -134,23 +290,9 @@ bool VideoSurface::start(const QVideoSurfaceFormat &format)
         default:
             break;
         }   
-     const QImage::Format image_format = QVideoFrame::imageFormatFromPixelFormat(format.pixelFormat());
-     const QSize size = format.frameSize();
-
-     if (image_format != QImage::Format_Invalid && !size.isEmpty()) {
-         _image_format = image_format;
-         _image_size = size;
-         _source_rectangle = format.viewport();
-
          QAbstractVideoSurface::start(format);
 
-         _widget->updateGeometry();
-         resize();
-
          return true;
-     } else {
-         return false;
-     }
 }
 
 cv::Mat VideoSurface::_get_mat(QImage image)
@@ -192,6 +334,11 @@ cv::Mat VideoSurface::_get_mat(QImage image)
     cv::cvtColor(result, new_result, CV_BGR2GRAY);
     cv::equalizeHist(new_result, new_result);
     return new_result;
+}
+
+void VideoSurface::set_current_frame(const QVideoFrame &frame)
+{
+
 }
 
 void VideoSurface::paint(QPainter &painter)
@@ -239,4 +386,69 @@ void VideoSurface::paint(QPainter &painter)
 
         _current_video_frame.unmap();
     }
+}
+
+void VideoSurface::initRgbTextureInfo(
+        GLenum internalFormat, GLuint format, GLenum type, const QSize &size)
+{
+    _yuv = false;
+    _texture_internal_format = internalFormat;
+    _texture_format = format;
+    _texture_type = type;
+    _texture_count = 1; // Note: ensure this is always <= Max_Textures
+    _texture_widths[0] = size.width();
+    _texture_heights[0] = size.height();
+    _texture_offsets[0] = 0;
+}
+
+void VideoSurface::initYuv420PTextureInfo(const QSize &size)
+{
+    int bytesPerLine = (size.width() + 3) & ~3;
+    int bytesPerLine2 = (size.width() / 2 + 3) & ~3;
+
+    _yuv = true;
+    _texture_internal_format = GL_LUMINANCE;
+    _texture_format = GL_LUMINANCE;
+    _texture_type = GL_UNSIGNED_BYTE;
+    _texture_count = 3; // Note: ensure this is always <= Max_Textures
+    _texture_widths [0] = bytesPerLine;
+    _texture_heights[0] = size.height();
+    _texture_offsets[0] = 0;
+    _texture_widths[1] = bytesPerLine2;
+    _texture_heights[1] = size.height() / 2;
+    _texture_offsets[1] = bytesPerLine * size.height();
+    _texture_widths[2] = bytesPerLine2;
+    _texture_heights[2] = size.height() / 2;
+    _texture_offsets[2] = bytesPerLine * size.height() + bytesPerLine2 * size.height()/2;
+}
+
+void VideoSurface::initYv12TextureInfo(const QSize &size)
+{
+    int bytesPerLine = (size.width() + 3) & ~3;
+    int bytesPerLine2 = (size.width() / 2 + 3) & ~3;
+
+    _yuv = true;
+    _texture_internal_format = GL_LUMINANCE;
+    _texture_format = GL_LUMINANCE;
+    _texture_type = GL_UNSIGNED_BYTE;
+    _texture_count = 3; // Note: ensure this is always <= Max_Textures
+    _texture_widths[0] = bytesPerLine;
+    _texture_heights[0] = size.height();
+    _texture_offsets[0] = 0;
+    _texture_widths[1] = bytesPerLine2;
+    _texture_heights[1] = size.height() / 2;
+    _texture_offsets[1] = bytesPerLine * size.height() + bytesPerLine2 * size.height()/2;
+    _texture_widths[2] = bytesPerLine2;
+    _texture_heights[2] = size.height() / 2;
+    _texture_offsets[2] = bytesPerLine * size.height();
+}
+
+QVideoSurfaceFormat VideoSurface::nearestFormat(const QVideoSurfaceFormat &format) const
+{
+    Q_UNUSED(format)
+    /* NOTE: this method is not used internally in Qt's programming, yet is required to be overriden
+     * per the abstract base class.
+     * see https://github.com/qt/qtmultimedia/blob/5.11/src/multimediawidgets/qpaintervideosurface_p.h#L71
+     * Not sure what the purpose of this method is.
+    */
 }
