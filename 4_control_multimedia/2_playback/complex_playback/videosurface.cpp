@@ -41,19 +41,29 @@ void VideoSurface::stop()
 
 bool VideoSurface::start(const QVideoSurfaceFormat &format)
 {
-     const QImage::Format image_format = QVideoFrame::imageFormatFromPixelFormat(format.pixelFormat());
-     const QSize size = format.frameSize();
+     const QSize size = ;
+     const QImage::Format image_format = ;
 
-     if (image_format == QImage::Format_Invalid && size.isEmpty()) {
+     // TODO: Check to see if the format is valid and the frame is actually a size
+     if () {
          return false;
      } else {
+	 // if we made it here, we're in business!
+	 // store image format
          _image_format = image_format;
+	 // store the video size
          _image_size = size;
+
+	 // what are you????
          _source_rectangle = format.viewport();
 
+	 // call our parent class
          QAbstractVideoSurface::start(format);
 
+	 // why are we doing this?????????????????
+	 // make sure the parent class's geometry is correct
          _video_widget->updateGeometry();
+	 // and resize
          resize();
 
          return true;
@@ -62,35 +72,23 @@ bool VideoSurface::start(const QVideoSurfaceFormat &format)
 
 void VideoSurface::paint(QPainter &painter)
 {
-    if (_current_video_frame.map(QAbstractVideoBuffer::ReadOnly)) {
-        const QTransform old_transform = painter.transform();
+    if ()) {
+        QImage image();
 
-        if (surfaceFormat().scanLineDirection() == QVideoSurfaceFormat::BottomToTop) {
-           painter.scale(1, -1);
-           painter.translate(0, -_video_widget->height());
-        }
-
-        QImage image(
-                _current_video_frame.bits(),
-                _current_video_frame.width(),
-                _current_video_frame.height(),
-                _current_video_frame.bytesPerLine(),
-                _image_format);
-
-        painter.drawImage(_target_rectangle, image, _source_rectangle);
-        painter.setTransform(old_transform);
-
-        _current_video_frame.unmap();
+        if () {}
+	else
+		;
     }
 }
 
 void VideoSurface::resize()
 {
-    QSize size = surfaceFormat().sizeHint();
+    QSize video_size = surfaceFormat().sizeHint();
     // scale the size of things
-    size.scale(_video_widget->size().boundedTo(size), Qt::KeepAspectRatio);
+    video_size.scale(_video_widget->size().boundedTo(video_size), Qt::KeepAspectRatio);
 
-    _target_rectangle = QRect(QPoint(0, 0), size);
+    // This isn't the target rectangle, per say.
+    _target_rectangle = QRect(QPoint(0, 0), video_size);
     // align the rectangle in the center
     _target_rectangle.moveCenter(_video_widget->rect().center());
 }

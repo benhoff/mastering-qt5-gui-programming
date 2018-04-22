@@ -36,15 +36,14 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::trigger_media_file_dialog()
 {
-    QStringList files = QFileDialog::getOpenFileNames(this, "Select one or more files to open");
+    QStringList files = ;
 
     for (QString filepath: files)
     {
-        _media_playlist->addMedia(QUrl::fromLocalFile(filepath));
     }
 
     if (_media_playlist->currentIndex() == -1)
-        _media_playlist->setCurrentIndex(0);
+        ;
 }
 
 void MainWindow::_setup_ui()
@@ -86,8 +85,6 @@ void MainWindow::update_button_state(QMediaPlayer::State state)
         _pause_button->setEnabled(false);
         _stop_button->setEnabled(true);
         break;
-
-
     }
 
 }

@@ -31,9 +31,11 @@ private:
     QVideoFrame _current_video_frame;
     QImage::Format _image_format;
     QSize _image_size;
+    QWidget *_video_widget;
+
+    // NOTE: Used for scaling with the `QPainter::drawImage` function
     QRect _target_rectangle;
     QRect _source_rectangle;
-    QWidget *_video_widget;
 
 };
 

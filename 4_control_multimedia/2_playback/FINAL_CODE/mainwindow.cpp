@@ -32,6 +32,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(_next_video, &QPushButton::clicked, _media_playlist, &QMediaPlaylist::next);
     connect(_previous_video, &QPushButton::clicked, _media_playlist, &QMediaPlaylist::previous);
     connect(_open_file, &QAction::triggered, this, &MainWindow::trigger_media_file_dialog);
+
+    connect(_media_player, &QMediaPlayer::stateChanged, this, &MainWindow::update_button_state);
+    update_button_state(QMediaPlayer::StoppedState);
 }
 
 void MainWindow::trigger_media_file_dialog()
@@ -66,4 +69,25 @@ void MainWindow::_setup_ui()
 MainWindow::~MainWindow()
 {
 
+}
+
+void MainWindow::update_button_state(QMediaPlayer::State state)
+{
+    switch(state){
+    case QMediaPlayer::StoppedState:
+        _play_button->setEnabled(true);
+        _pause_button->setEnabled(false);
+        _stop_button->setEnabled(false);
+        return;
+    case QMediaPlayer::PlayingState:
+        _play_button->setEnabled(false);
+        _pause_button->setEnabled(true);
+        _stop_button->setEnabled(true);
+        break;
+    case QMediaPlayer::PausedState:
+        _play_button->setEnabled(true);
+        _pause_button->setEnabled(false);
+        _stop_button->setEnabled(true);
+        break;
+    }
 }
