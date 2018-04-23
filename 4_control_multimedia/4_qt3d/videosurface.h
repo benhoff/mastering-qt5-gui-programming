@@ -3,17 +3,17 @@
 
 #include <QAbstractVideoSurface>
 #include <QVideoSurfaceFormat>
-#include <QImage>
-#include <QWidget>
-
-#include <QtGui/QOpenGLFunctions>
 
 #include <opencv2/opencv.hpp>
+
+#include "texture2d.h"
+
 
 inline cv::Mat qimage_to_mat_ref(QImage &img, int format)
 {
     return cv::Mat(img.height(), img.width(), format, const_cast<uchar*>(img.bits()), static_cast<size_t>(img.bytesPerLine()));
 }
+
 
 class VideoSurface : public QAbstractVideoSurface
 {
@@ -35,19 +35,14 @@ public:
 private:
     cv::Mat _get_mat(QImage image);
 
-    void initRgbTextureInfo(GLenum internalFormat, GLuint format, GLenum type, const QSize &size);
-    void initYuv420PTextureInfo(const QSize &size);
-    void initYv12TextureInfo(const QSize &size);
+    Texture2D *_texture;
 
     cv::CascadeClassifier _face_classifier;
-
-    QImage::Format _image_format;
 
     QVideoSurfaceFormat::Direction _scan_line_direction;
     bool _mirrored;
     QVideoSurfaceFormat::YCbCrColorSpace _color_space;
     GLenum _texture_format;
-    GLuint _texture_internal_format;
     GLenum _texture_type;
     int _texture_count;
 
@@ -57,6 +52,7 @@ private:
     int _texture_heights[Max_Textures];
     int _texture_offsets[Max_Textures];
     bool _yuv;
+    QSize _frame_size;
 };
 
 #endif // VIDEOSURFACE_H

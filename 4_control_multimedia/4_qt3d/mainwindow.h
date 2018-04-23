@@ -7,6 +7,7 @@
 #include <QCameraInfo>
 #include <Qt3DCore/QEntity>
 #include <Qt3DExtras/qt3dwindow.h>
+#include "videosurface.h"
 
 class MainWindow : public QMainWindow
 {
@@ -26,10 +27,12 @@ private:
 
     QWidget *_central_widget;
 
+
     QPushButton *_record_button;
     QPushButton *_stop_record_button;
     Qt3DExtras::Qt3DWindow *_view;
     Qt3DCore::QEntity *_root_entity;
+    VideoSurface *_video_surfaces
 };
 
 #endif // MAINWINDOW_H

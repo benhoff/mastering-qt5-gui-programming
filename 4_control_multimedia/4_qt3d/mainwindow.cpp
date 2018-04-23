@@ -4,6 +4,7 @@
 #include <QActionGroup>
 #include <QMenuBar>
 #include <Qt3DRender/QCamera>
+#include <Qt3DExtras/QTextureMaterial>
 
 Q_DECLARE_METATYPE(QCameraInfo)
 
@@ -12,15 +13,32 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     _view = new Qt3DExtras::Qt3DWindow();
-    // FIXME
     _central_widget = QWidget::createWindowContainer(_view);
+    _video_surface = new VideoSurface();
     
     setCentralWidget(_central_widget);
     _root_entity = new Qt3DCore::QEntity();
     Qt3DRender::QCamera *camera_entity = _view->camera();
-    // set camera perspective, position, up vector, view center
+    // 2d scene
+    // https://stackoverflow.com/questions/46821234/qt3d-qtquick-scene2d-using-c
+    /*
+    cameraEntity->setPosition(QVector3D(0, 0, 50.0f));
+    cameraEntity->setUpVector(QVector3D(0, 1, 0));
+    cameraEntity->setViewCenter(QVector3D(0, 0, 0));
+    */
+
+    // steps: https://doc.qt.io/qt-5.10/qt3drender-qmaterial.html
+
+    // NOTE: probably want a 2D texture instead
+    // texture material?
+    // https://doc.qt.io/qt-5.10/qt3dextras-qtexturematerial.html#details
+
+    // QTextureMaterial -> QTexture2D -> QTextureImageData (Gene'd by TextureGenerator)
     
     // QTexture2D is the winner. Should probably let the VideoSurface hold onto it.
+    Qt3DExtras::QTextureMaterial *texture_material = new Qt3DExtras::QTextureMaterial();
+    // FIXME: Implement
+    // texture_material->setTexture();
 
     _view->setRootEntity(_root_entity);
     _setup_camera_devices();
@@ -67,6 +85,6 @@ void MainWindow::set_camera_action(QAction *camera_action)
 void MainWindow::set_camera(const QCameraInfo &camera_info)
 {
     _camera.reset(new QCamera(camera_info));
-    // _camera.data()->setViewfinder(_video_widget->get_videosurface());
+    _camera.data()->setViewfinder(_video_surface);
     _camera.data()->start();
 }

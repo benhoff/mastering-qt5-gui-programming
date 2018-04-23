@@ -41,11 +41,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    videosurface.cpp
+    videosurface.cpp \
+    texture2d.cpp
 
 HEADERS += \
         mainwindow.h \
-    videosurface.h
+    videosurface.h \
+    texture2d.h
 
 # https://stackoverflow.com/a/39234363/2701402
 copydata.commands = $(COPY_FILE) \"$$shell_path($$PWD\\haarcascade_frontalface_default.xml)\" \"$$shell_path($$OUT_PWD)\"
