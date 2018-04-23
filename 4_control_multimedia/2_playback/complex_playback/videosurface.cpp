@@ -9,6 +9,50 @@ VideoSurface::VideoSurface(QWidget *video_widget, QObject *parent) :
 {
 }
 
+bool VideoSurface::start(const QVideoSurfaceFormat &format)
+{
+     const QSize size = ;
+     const QImage::Format image_format = ;
+
+     // TODO: Check to see if the format is valid and the frame is actually a size
+     if () {
+         return false;
+     } else {
+     // if we made it here, we're in business!
+     // store image format
+     _image_format = image_format;
+     // store the video size
+     _image_size = size;
+
+     _source_rectangle = format.viewport();
+
+     // call our parent class
+     QAbstractVideoSurface::start(format);
+
+     // make sure the parent class's geometry is correct
+     _video_widget->updateGeometry();
+     // and resize
+     resize();
+
+         return true;
+     }
+}
+
+void VideoSurface::resize()
+{
+    // How big is the video coming in?
+    QSize video_size = surfaceFormat().sizeHint();
+    // How big is the parent widget?
+    QSize widget_size = _video_widget->size();
+    // scale the video size to our widget size, keeping the aspect ratio
+    video_size.scale(widget_size.boundedTo(video_size), Qt::KeepAspectRatio);
+
+    // Target is the widget we're going to paint too
+    _target_rectangle = QRect(QPoint(0, 0), video_size);
+    // align the rectangle in the center
+    _target_rectangle.moveCenter(_video_widget->rect().center());
+}
+
 bool VideoSurface::present(const QVideoFrame &frame)
 {
     // check to make sure that our user didn't switch between the
@@ -31,66 +75,23 @@ bool VideoSurface::present(const QVideoFrame &frame)
     }
 }
 
+void VideoSurface::paint(QPainter &painter)
+{
+    if () {
+        QImage image();
+
+        if () {}
+        else
+            ;
+    }
+}
+
 void VideoSurface::stop()
 {
     _current_video_frame = QVideoFrame();
     _target_rectangle = QRect();
     QAbstractVideoSurface::stop();
     _video_widget->update();
-}
-
-bool VideoSurface::start(const QVideoSurfaceFormat &format)
-{
-     const QSize size = ;
-     const QImage::Format image_format = ;
-
-     // TODO: Check to see if the format is valid and the frame is actually a size
-     if () {
-         return false;
-     } else {
-	 // if we made it here, we're in business!
-	 // store image format
-         _image_format = image_format;
-	 // store the video size
-         _image_size = size;
-
-	 // what are you????
-         _source_rectangle = format.viewport();
-
-	 // call our parent class
-         QAbstractVideoSurface::start(format);
-
-	 // why are we doing this?????????????????
-	 // make sure the parent class's geometry is correct
-         _video_widget->updateGeometry();
-	 // and resize
-         resize();
-
-         return true;
-     }
-}
-
-void VideoSurface::paint(QPainter &painter)
-{
-    if ()) {
-        QImage image();
-
-        if () {}
-	else
-		;
-    }
-}
-
-void VideoSurface::resize()
-{
-    QSize video_size = surfaceFormat().sizeHint();
-    // scale the size of things
-    video_size.scale(_video_widget->size().boundedTo(video_size), Qt::KeepAspectRatio);
-
-    // This isn't the target rectangle, per say.
-    _target_rectangle = QRect(QPoint(0, 0), video_size);
-    // align the rectangle in the center
-    _target_rectangle.moveCenter(_video_widget->rect().center());
 }
 
 QList<QVideoFrame::PixelFormat> VideoSurface::supportedPixelFormats(QAbstractVideoBuffer::HandleType handleType) const

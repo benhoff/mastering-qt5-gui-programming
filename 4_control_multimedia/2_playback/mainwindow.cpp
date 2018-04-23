@@ -19,8 +19,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     _video_widget = ;
 
-    _open_file = menuBar()->addAction("Open File");
-
     _setup_ui();
     setCentralWidget(_central_widget);
 
