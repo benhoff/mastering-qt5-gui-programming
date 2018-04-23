@@ -4,9 +4,8 @@
 #include <QMainWindow>
 #include <QMediaPlaylist>
 #include <QMediaPlayer>
-#include <QVideoWidget>
 #include <QPushButton>
-#include "videowidget"
+#include "videowidget.h"
 
 
 class MainWindow : public QMainWindow

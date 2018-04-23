@@ -14,14 +14,13 @@ MainWindow::MainWindow(QWidget *parent)
       _previous_video(new QPushButton("Previous Video"))
 
 {
-    _media_player = new QMediaPlayer;
-    _media_playlist = new QMediaPlaylist;
+    _media_player =new QMediaPlayer;
+    _media_playlist = new QMediaPlaylist(_media_player);
     _media_player->setPlaylist(_media_playlist);
 
     _video_widget = new QVideoWidget();
 
     _media_player->setVideoOutput(_video_widget);
-    _open_file = menuBar()->addAction("Open File");
 
     _setup_ui();
     setCentralWidget(_central_widget);
@@ -31,10 +30,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(_stop_button, &QPushButton::clicked, _media_player, &QMediaPlayer::stop);
     connect(_next_video, &QPushButton::clicked, _media_playlist, &QMediaPlaylist::next);
     connect(_previous_video, &QPushButton::clicked, _media_playlist, &QMediaPlaylist::previous);
-    connect(_open_file, &QAction::triggered, this, &MainWindow::trigger_media_file_dialog);
-
     connect(_media_player, &QMediaPlayer::stateChanged, this, &MainWindow::update_button_state);
     update_button_state(QMediaPlayer::StoppedState);
+    _open_file = menuBar()->addAction("Open File");
+    connect(_open_file, &QAction::triggered, this, &MainWindow::trigger_media_file_dialog);
 }
 
 void MainWindow::trigger_media_file_dialog()
@@ -90,4 +89,5 @@ void MainWindow::update_button_state(QMediaPlayer::State state)
         _stop_button->setEnabled(true);
         break;
     }
+
 }
