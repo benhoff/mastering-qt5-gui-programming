@@ -9,7 +9,7 @@
 #include <opencv2/opencv.hpp>
 
 
-inline cv::Mat qimage_to_mat_ref(QImage &img, int format)
+inline cv::Mat qimage_to_mat(QImage &img, int format)
 {
     return cv::Mat(img.height(), img.width(), format, const_cast<uchar*>(img.bits()), static_cast<size_t>(img.bytesPerLine()));
 }
@@ -45,6 +45,7 @@ private:
     QRect _source_rectangle;
     QVideoFrame _current_video_frame;
     QWidget *_video_widget;
+    QPen _red_pen;
 
 };
 
