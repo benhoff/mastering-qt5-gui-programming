@@ -30,7 +30,7 @@ void VideoSurface::paint(QPainter &painter)
                 _image_format);
 
         cv::Mat gray_mat_image = _get_mat(image);
-	cv::Size max_face_size(gray_mat_image.cols/4, gray_mat_image.rows/4);
+        cv::Size max_face_size(gray_mat_image.cols/4, gray_mat_image.rows/4);
 
         std::vector<cv::Rect> faces;
 
@@ -44,11 +44,11 @@ void VideoSurface::paint(QPainter &painter)
            const QTransform old_transform = painter.transform();
            painter.scale(1, -1);
            painter.translate(0, -_video_widget->height());
-	   painter.drawImage(_target_rectangle, image, _source_rectangle);
-	   painter.setTransform(old_transform);
+           painter.drawImage(_target_rectangle, image, _source_rectangle);
+           painter.setTransform(old_transform);
+        } else {
+            painter.drawImage(_target_rectangle, image, _source_rectangle);
         }
-	else
-		painter.drawImage(_target_rectangle, image, _source_rectangle);
 
         qDebug() << "Size: " << faces.size();
 
