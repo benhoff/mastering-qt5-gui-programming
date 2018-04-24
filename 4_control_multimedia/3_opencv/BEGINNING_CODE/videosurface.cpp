@@ -15,10 +15,6 @@ VideoSurface::VideoSurface(QWidget *video_widget, QObject *parent)
 {
     QDir executable_directory(QCoreApplication::applicationDirPath());
     QString filename("haarcascade_frontalface_default.xml");
-    std::string filepath = executable_directory.filePath(filename).toStdString();
-    _face_classifier.load(filepath.c_str());
-
-
     _red_pen.setColor(Qt::red);
     _red_pen.setWidth(10);
 }
@@ -34,21 +30,14 @@ void VideoSurface::paint(QPainter &painter)
                 _image_format);
 
         cv::Mat gray_mat_image = _get_mat(image);
-        cv::Size min_face_size(gray_mat_image.cols/4, gray_mat_image.rows/4);
+        cv::Size max_face_size(gray_mat_image.cols/4, gray_mat_image.rows/4);
 
         std::vector<cv::Rect> faces;
-
-        _face_classifier.detectMultiScale(gray_mat_image, faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, min_face_size);
-
-        QPainter image_painter(&image);
-        image_painter.setPen(_red_pen);
 
         for (cv::Rect rectangle: faces)
         {
             QPoint top_left(rectangle.tl().x, rectangle.tl().y);
             QPoint bottom_right(rectangle.br().x, rectangle.br().y);
-            QRect qt_rectangle(top_left, bottom_right);
-            image_painter.drawRect(qt_rectangle);
         }
 
         if (surfaceFormat().scanLineDirection() == QVideoSurfaceFormat::BottomToTop) {
@@ -102,10 +91,6 @@ cv::Mat VideoSurface::_get_mat(QImage image)
         break;
     }
     // NOTE: If we made it here, sucessfully created `cv::Mat mat_image`
-    cv::Mat gray_mat_image;
-    cv::cvtColor(mat_image, gray_mat_image, CV_BGR2GRAY);
-    cv::equalizeHist(gray_mat_image, gray_mat_image);
-    return gray_mat_image;
 }
 
 void VideoSurface::resize()
