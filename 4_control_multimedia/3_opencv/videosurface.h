@@ -5,6 +5,7 @@
 #include <QVideoSurfaceFormat>
 #include <QImage>
 #include <QWidget>
+#include <QPen>
 
 #include <opencv2/opencv.hpp>
 
