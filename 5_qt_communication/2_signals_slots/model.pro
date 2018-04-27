@@ -23,15 +23,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp \
     photomodel.cpp \
-    colorpicker.cpp \
     mypainteditem.cpp
 
 HEADERS += \
-        mainwindow.h \
     photomodel.h \
-    colorpicker.h \
     mypainteditem.h
 
 DISTFILES += \

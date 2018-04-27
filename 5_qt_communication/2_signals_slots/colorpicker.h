@@ -13,7 +13,10 @@ class ColorPicker : public QWidget
     Q_OBJECT
 public:
     ColorPicker(QColor color, QWidget* parent=0);
-    ~ColorPicker();
+    ~ColorPicker()
+    {
+        delete pix;
+    }
 
     QColor current_color;
 

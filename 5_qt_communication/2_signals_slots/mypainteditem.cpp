@@ -2,37 +2,52 @@
 
 void MyPaintedItem::paint(QPainter *p)
 {
-    int w = width() - 5;
-
-    QRect r(0, foff, w, height() - 2*foff);
-    int wi = r.width() - 2;
-    int hi = r.height() - 2;
-    if (!pix || pix->height() != hi || pix->width() != wi) {
+    QRect r(0, 0, width(), height());
+    if (!pix || pix->height() != height()|| pix->width() != width()) {
         delete pix;
-        QImage img(wi, hi, QImage::Format_RGB32);
+        QImage img(width(), height(), QImage::Format_RGB32);
         int y;
         uint *pixel = (uint *) img.scanLine(0);
-        for (y = 0; y < hi; y++) {
-            const uint *end = pixel + wi;
+        for (y = 0; y < height(); y++) {
+            const uint *end = pixel + static_cast<int>(width());
             while (pixel < end) {
-                QColor c = y_to_color(y+coff);
+                QColor c = y_to_color(y);
                 *pixel = c.rgb();
                 ++pixel;
             }
         pix = new QPixmap(QPixmap::fromImage(img));
         }
-    // update pixmap here first
-    p.drawPixmap(1, coff, *pix);
-    const QPalette &g = palette();
-    qDrawShadePanel(&p, r, g, true);
-    p.setPen(g.foreground().color());
-    p.setBrush(g.foreground());
-    QPolygon a;
-    int y_2 = color_to_y(current_color);
-    a.setPoints(3, w, y_2, w+5, y_2+5, w+5, y_2-5);
-    p.eraseRect(w, 0, 5, height());
-    p.drawPolygon(a);
+    }
+    p->drawPixmap(0, 0, *pix);
 }
+
+QColor MyPaintedItem::y_to_color(int y)
+{
+    int d = height();
+    int index = 255 - y *255/d;
+    if (index > 0 && index < 255)
+        return viridis_values[index];
+    else if (index < 0)
+            return viridis_values[0];
+    else
+        return viridis_values[255];
+}
+
+int MyPaintedItem::color_to_y(QColor color)
+{
+    int index;
+    for (QVector<QColor>::iterator it = viridis_values.begin(); it != viridis_values.end(); it++)
+    {
+        if (*it == color)
+        {
+            index = std::distance(viridis_values.begin(), it);
+            break;
+        }
+    }
+    int d = height();
+    return (255-index)*d/255;
+}
+
 MyPaintedItem::MyPaintedItem()
 {
     viridis_values = QVector<QColor>{
@@ -292,5 +307,4 @@ MyPaintedItem::MyPaintedItem()
             QColor(249, 231, 33),
             QColor(251, 231, 35),
             QColor(254, 231, 36)};
-
 }
