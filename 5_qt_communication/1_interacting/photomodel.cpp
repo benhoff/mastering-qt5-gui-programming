@@ -1,56 +1,67 @@
-#include "mypainteditem.h"
+#include "photomodel.h"
 
-void MyPaintedItem::paint(QPainter *p)
-{
-    QRect r(0, 0, width(), height());
-    if (!pix || pix->height() != height()|| pix->width() != width()) {
-        delete pix;
-        QImage img(width(), height(), QImage::Format_RGB32);
-        int y;
-        uint *pixel = (uint *) img.scanLine(0);
-        for (y = 0; y < height(); y++) {
-            const uint *end = pixel + static_cast<int>(width());
-            while (pixel < end) {
-                QColor c = y_to_color(y);
-                *pixel = c.rgb();
-                ++pixel;
-            }
-        pix = new QPixmap(QPixmap::fromImage(img));
-        }
-    }
-    p->drawPixmap(0, 0, *pix);
-}
+#include <QString>
+#include <QColor>
+#include <QRandomGenerator>
 
-QColor MyPaintedItem::y_to_color(int y)
+PhotoModel::PhotoModel(QObject *parent)
+    : QAbstractListModel(parent)
 {
-    int d = height();
-    int index = 255 - y *255/d;
-    if (index > 0 && index < 255)
-        return viridis_values[index];
-    else if (index < 0)
-            return viridis_values[0];
-    else
-        return viridis_values[255];
-}
+    setup_virdis_values();
+    QRandomGenerator random = QRandomGenerator::securelySeeded();
+	int num_colors = 100;
 
-int MyPaintedItem::color_to_y(QColor color)
-{
-    int index;
-    for (QVector<QColor>::iterator it = viridis_values.begin(); it != viridis_values.end(); it++)
+    colors.reserve(num_colors);
+    for (int i = 0; i < num_colors; i++)
     {
-        if (*it == color)
-        {
-            index = std::distance(viridis_values.begin(), it);
-            break;
-        }
+        QColor color = _viridis_values[random.bounded(255)];
+        colors.append(color);
     }
-    int d = height();
-    return (255-index)*d/255;
 }
 
-MyPaintedItem::MyPaintedItem()
+int PhotoModel::rowCount(const QModelIndex &parent) const
 {
-    viridis_values = QVector<QColor>{
+    if (parent.isValid())
+        return 0;
+    return colors.size();
+}
+
+
+QVariant PhotoModel::data(const QModelIndex &index, int role) const
+{
+    if (!index.isValid())
+        return QVariant();
+
+    if (role == Qt::DecorationRole)
+        return colors[index.row()];
+
+    return QVariant();
+}
+
+bool PhotoModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if(data(index, role) != value)
+    {
+        colors[index.row()] = value.value<QColor>();
+        emit dataChanged(index, index, QVector<int>() << role);
+        return true;
+    }
+
+    return false;
+}
+
+Qt::ItemFlags PhotoModel::flags(const QModelIndex &index) const
+{
+    if (!index.isValid())
+        return Qt::NoItemFlags;
+
+    return Qt::ItemIsEnabled;
+
+}
+
+void PhotoModel::setup_virdis_values()
+{
+    _viridis_values = QVector<QColor>{
             QColor(68, 1, 84),
             QColor(68, 2, 85),
             QColor(69, 3, 87),

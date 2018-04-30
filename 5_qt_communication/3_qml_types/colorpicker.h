@@ -7,19 +7,17 @@
 #include <QPainter>
 
 
-class MyPaintedItem : public QQuickPaintedItem
+class ColorPicker: public QQuickPaintedItem
 {
     Q_OBJECT
-    // See: https://wiki.qt.io/How_to_Bind_a_QML_Property_to_a_C%2B%2B_Function
-    // Q_PROPERTY(QColor y_to_color READ name WRITE setName NOTIFY nameChanged)
 public:
-    explicit MyPaintedItem();
+    explicit ColorPicker();
 
     void paint(QPainter *p);
+    Q_INVOKABLE int color_to_y(QColor color);
+    Q_INVOKABLE QColor y_to_color(int y);
 
 private:
-    QColor y_to_color(int y);
-    int color_to_y(QColor color);
 
     QColor current_color;
     QVector<QColor> viridis_values;

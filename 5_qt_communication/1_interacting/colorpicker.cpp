@@ -1,69 +1,106 @@
-#include "photomodel.h"
+#include "colorpicker.h"
 
-#include <QString>
-#include <QColor>
-#include <QRandomGenerator>
-
-PhotoModel::PhotoModel(QObject *parent)
-    : QAbstractListModel(parent)
+QColor ColorPicker::y_to_color(int y)
 {
-    setup_virdis_values();
-    QRandomGenerator random = QRandomGenerator::securelySeeded();
-	int num_colors = 100;
+    int d = height() - 2*coff - 1;
+    int index = 255 - (y - coff)*255/d;
+    if (index > 0 && index < 255)
+        return viridis_values[index];
+    else if (index < 0)
+            return viridis_values[0];
+    else
+        return viridis_values[255];
+}
 
-    colors.reserve(num_colors);
-    for (int i = 0; i < num_colors; i++)
+int ColorPicker::color_to_y(QColor color)
+{
+    int index;
+    for (QVector<QColor>::iterator it = viridis_values.begin(); it != viridis_values.end(); it++)
     {
-        QColor color = _viridis_values[random.bounded(255)];
-        colors.append(color);
+        if (*it == color)
+        {
+            index = std::distance(viridis_values.begin(), it);
+            break;
+        }
     }
+    int d = height() - 2*coff - 1;
+    return coff + (255-index)*d/255;
 }
 
-int PhotoModel::rowCount(const QModelIndex &parent) const
+ColorPicker::~ColorPicker()
 {
-    if (parent.isValid())
-        return 0;
-    return colors.size();
+    delete pix;
+}
+
+void ColorPicker::mouseMoveEvent(QMouseEvent *m)
+{
+    set_color(y_to_color(m->y()));
+}
+void ColorPicker::mousePressEvent(QMouseEvent *m)
+{
+    set_color(y_to_color(m->y()));
+}
+
+void ColorPicker::set_color(QColor color)
+{
+    if (color == current_color)
+        return;
+
+    // NOTE: should actually check if the color is in the index
+    current_color = color;
+
+    delete pix; pix=0;
+    repaint();
+    emit new_color(current_color);
+}
+
+QSize ColorPicker::sizeHint() const
+{
+    return QSize(50, 300);
 }
 
 
-QVariant PhotoModel::data(const QModelIndex &index, int role) const
+void ColorPicker::paintEvent(QPaintEvent *)
 {
-    if (!index.isValid())
-        return QVariant();
+    int w = width() - 5;
 
-    if (role == Qt::DecorationRole)
-        return colors[index.row()];
-
-    return QVariant();
-}
-
-bool PhotoModel::setData(const QModelIndex &index, const QVariant &value, int role)
-{
-    if(data(index, role) != value)
-    {
-        colors[index.row()] = value.value<QColor>();
-
-        // NOTE: Emitting specific roles prevents the QML delegate from updating
-        emit dataChanged(index, index);
-        return true;
+    QRect r(0, foff, w, height() - 2*foff);
+    int wi = r.width() - 2;
+    int hi = r.height() - 2;
+    if (!pix || pix->height() != hi || pix->width() != wi) {
+        delete pix;
+        QImage img(wi, hi, QImage::Format_RGB32);
+        int y;
+        uint *pixel = (uint *) img.scanLine(0);
+        for (y = 0; y < hi; y++) {
+            const uint *end = pixel + wi;
+            while (pixel < end) {
+                QColor c = y_to_color(y+coff);
+                *pixel = c.rgb();
+                ++pixel;
+            }
+        pix = new QPixmap(QPixmap::fromImage(img));
+        }
     }
-
-    return false;
+    QPainter p(this);
+    p.drawPixmap(1, coff, *pix);
+    const QPalette &g = palette();
+    qDrawShadePanel(&p, r, g, true);
+    p.setPen(g.foreground().color());
+    p.setBrush(g.foreground());
+    QPolygon a;
+    int y_2 = color_to_y(current_color);
+    a.setPoints(3, w, y_2, w+5, y_2+5, w+5, y_2-5);
+    p.eraseRect(w, 0, 5, height());
+    p.drawPolygon(a);
 }
 
-Qt::ItemFlags PhotoModel::flags(const QModelIndex &index) const
+ColorPicker::ColorPicker(QColor color, QWidget* parent)
+    :QWidget(parent)
 {
-    if (!index.isValid())
-        return Qt::NoItemFlags;
+    pix = 0;
 
-    return Qt::ItemIsEnabled;
-
-}
-
-void PhotoModel::setup_virdis_values()
-{
-    _viridis_values = QVector<QColor>{
+    viridis_values = QVector<QColor>{
             QColor(68, 1, 84),
             QColor(68, 2, 85),
             QColor(69, 3, 87),
@@ -320,4 +357,6 @@ void PhotoModel::setup_virdis_values()
             QColor(249, 231, 33),
             QColor(251, 231, 35),
             QColor(254, 231, 36)};
+
+    current_color = color;
 }
