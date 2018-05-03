@@ -6,7 +6,8 @@
 #include <QColor>
 #include <QPainter>
 
-
+// NOTE: this class is a slight reimplemtation of `ColorPicker` from
+//  video 2.3
 class ColorPicker: public QQuickPaintedItem
 {
     Q_OBJECT
