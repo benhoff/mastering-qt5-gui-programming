@@ -23,16 +23,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp \
     photomodel.cpp \
-    colorpicker.cpp \
-    viridisdialog.cpp
+    colorpicker.cpp
 
 HEADERS += \
-        mainwindow.h \
     photomodel.h \
-    colorpicker.h \
-    viridisdialog.h
+    colorpicker.h
 
 DISTFILES += \
     main.qml

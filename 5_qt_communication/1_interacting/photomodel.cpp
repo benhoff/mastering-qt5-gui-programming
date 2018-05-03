@@ -43,7 +43,9 @@ bool PhotoModel::setData(const QModelIndex &index, const QVariant &value, int ro
     if(data(index, role) != value)
     {
         colors[index.row()] = value.value<QColor>();
-        emit dataChanged(index, index, QVector<int>() << role);
+
+        // NOTE: Emitting specific roles prevents the QML delegate from updating
+        emit dataChanged(index, index);
         return true;
     }
 

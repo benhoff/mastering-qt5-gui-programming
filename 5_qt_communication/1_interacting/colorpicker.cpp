@@ -1,9 +1,31 @@
 #include "colorpicker.h"
+#include <QDebug>
+
+void ColorPicker::paint(QPainter *p)
+{
+    QRect r(0, 0, width(), height());
+    if (!pix || pix->height() != height()|| pix->width() != width()) {
+        delete pix;
+        QImage img(width(), height(), QImage::Format_RGB32);
+        int y;
+        uint *pixel = (uint *) img.scanLine(0);
+        for (y = 0; y < height(); y++) {
+            const uint *end = pixel + static_cast<int>(width());
+            while (pixel < end) {
+                QColor c = y_to_color(y);
+                *pixel = c.rgb();
+                ++pixel;
+            }
+        pix = new QPixmap(QPixmap::fromImage(img));
+        }
+    }
+    p->drawPixmap(0, 0, *pix);
+}
 
 QColor ColorPicker::y_to_color(int y)
 {
-    int d = height() - 2*coff - 1;
-    int index = 255 - (y - coff)*255/d;
+    int d = height();
+    int index = 255 - y *255/d;
     if (index > 0 && index < 255)
         return viridis_values[index];
     else if (index < 0)
@@ -23,80 +45,11 @@ int ColorPicker::color_to_y(QColor color)
             break;
         }
     }
-    int d = height() - 2*coff - 1;
-    return coff + (255-index)*d/255;
+    int d = height();
+    return (255-index)*d/255;
 }
 
-ColorPicker::~ColorPicker()
-{
-    delete pix;
-}
-
-void ColorPicker::mouseMoveEvent(QMouseEvent *m)
-{
-    set_color(y_to_color(m->y()));
-}
-void ColorPicker::mousePressEvent(QMouseEvent *m)
-{
-    set_color(y_to_color(m->y()));
-}
-
-void ColorPicker::set_color(QColor color)
-{
-    if (color == current_color)
-        return;
-
-    // NOTE: should actually check if the color is in the index
-    current_color = color;
-
-    delete pix; pix=0;
-    repaint();
-    emit new_color(current_color);
-}
-
-QSize ColorPicker::sizeHint() const
-{
-    return QSize(50, 300);
-}
-
-
-void ColorPicker::paintEvent(QPaintEvent *)
-{
-    int w = width() - 5;
-
-    QRect r(0, foff, w, height() - 2*foff);
-    int wi = r.width() - 2;
-    int hi = r.height() - 2;
-    if (!pix || pix->height() != hi || pix->width() != wi) {
-        delete pix;
-        QImage img(wi, hi, QImage::Format_RGB32);
-        int y;
-        uint *pixel = (uint *) img.scanLine(0);
-        for (y = 0; y < hi; y++) {
-            const uint *end = pixel + wi;
-            while (pixel < end) {
-                QColor c = y_to_color(y+coff);
-                *pixel = c.rgb();
-                ++pixel;
-            }
-        pix = new QPixmap(QPixmap::fromImage(img));
-        }
-    }
-    QPainter p(this);
-    p.drawPixmap(1, coff, *pix);
-    const QPalette &g = palette();
-    qDrawShadePanel(&p, r, g, true);
-    p.setPen(g.foreground().color());
-    p.setBrush(g.foreground());
-    QPolygon a;
-    int y_2 = color_to_y(current_color);
-    a.setPoints(3, w, y_2, w+5, y_2+5, w+5, y_2-5);
-    p.eraseRect(w, 0, 5, height());
-    p.drawPolygon(a);
-}
-
-ColorPicker::ColorPicker(QColor color, QWidget* parent)
-    :QWidget(parent)
+ColorPicker::ColorPicker()
 {
     pix = 0;
 
@@ -357,6 +310,4 @@ ColorPicker::ColorPicker(QColor color, QWidget* parent)
             QColor(249, 231, 33),
             QColor(251, 231, 35),
             QColor(254, 231, 36)};
-
-    current_color = color;
 }
