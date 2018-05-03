@@ -12,7 +12,24 @@ Window {
 
     // TODO: Start coding here
 
+    ListView {
+        model: photo_model
+        anchors.fill: parent
+        delegate: Rectangle {
+            color: decoration
+            width: parent.width
+            height: 80
 
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    color_dialog.index = index;
+                    color_dialog.set_color(decoration);
+                    color_dialog.open();
+                }
+            }
+        }
+    }
 
 
 
@@ -101,6 +118,10 @@ Window {
                     // --------------------------------------------------------------
                     // TODO: use photo_model's `setData` method.
                     // Method call: `setData(index, value, role)`
+                    var column_number = 0;
+                    var q_model_index = photo_model.index(color_dialog.index, column_number);
+                    photo_model.setData(q_model_index, color_dialog.get_color(), "decoration");
+
 
 
 

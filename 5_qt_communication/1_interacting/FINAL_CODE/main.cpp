@@ -15,9 +15,15 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     // this registration code to be covered in video 5.3
-    // qmlRegisterType<ColorPicker>("ColorPickers", 1, 0, "ColorPicker");
+    qmlRegisterType<ColorPicker>("ColorPickers", 1, 0, "ColorPicker");
 
     QQmlApplicationEngine engine;
+
+    PhotoModel photo_model;
+
+    QQmlContext *root_context = engine.rootContext();
+    root_context->setContextProperty("photo_model", &photo_model);
+
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 
     if (engine.rootObjects().isEmpty())
