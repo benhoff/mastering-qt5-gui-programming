@@ -1,12 +1,13 @@
-#ifndef MYPAINTEDITEM_H
-#define MYPAINTEDITEM_H
+#ifndef COLORPICKER_H
+#define COLORPICKER_H
 
 #include <QQuickPaintedItem>
 #include <QVector>
 #include <QColor>
 #include <QPainter>
 
-
+// NOTE: this class is a slight reimplemtation of `ColorPicker` from
+//  video 2.3
 class ColorPicker: public QQuickPaintedItem
 {
     Q_OBJECT
@@ -24,4 +25,4 @@ private:
     QPixmap *pix;
 };
 
-#endif // MYPAINTEDITEM_H
+#endif // COLORPICKER_H
