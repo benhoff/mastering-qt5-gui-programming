@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>crosshairs.png</file>
+        <file>ColorChangeDialog.qml</file>
+    </qresource>
+</RCC>
