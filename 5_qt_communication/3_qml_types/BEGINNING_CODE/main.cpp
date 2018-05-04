@@ -13,8 +13,6 @@ int main(int argc, char *argv[])
     // we're not using widgets
     QGuiApplication app(argc, argv);
 
-    qmlRegisterType<ColorPicker>("ColorPickers", 1, 0, "ColorPicker");
-
     QQmlApplicationEngine engine;
 
 
