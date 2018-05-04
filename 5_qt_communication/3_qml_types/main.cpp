@@ -5,21 +5,24 @@
 #include "colorpicker.h"
 
 
-
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
+    // NOTE: we use `QGuiApplication` instead of `QApplication` as
+    // we're not using widgets
     QGuiApplication app(argc, argv);
-    // TODO: fix name
+
     qmlRegisterType<ColorPicker>("ColorPickers", 1, 0, "ColorPicker");
+
+    QQmlApplicationEngine engine;
+
+
 
     PhotoModel photo_model;
 
-    QQmlApplicationEngine engine;
-    QQmlContext *qml_context = engine.rootContext();
-
-    qml_context->setContextProperty("photo_model", &photo_model);
+    QQmlContext *root_context = engine.rootContext();
+    root_context->setContextProperty("photo_model", &photo_model);
 
     engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
 

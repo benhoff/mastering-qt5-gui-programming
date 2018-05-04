@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui quick widgets
+QT       += core gui quick
 
 TARGET = model
 TEMPLATE = app
