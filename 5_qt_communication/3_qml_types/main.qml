@@ -5,8 +5,6 @@ import QtQuick.Dialogs 1.3
 import QtQuick.Controls 1.2
 import ColorPickers 1.0
 
-import Directory 1.0
-
 Window {
     visible: true
     width: 500
