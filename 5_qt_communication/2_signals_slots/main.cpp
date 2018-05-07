@@ -29,5 +29,8 @@ int main(int argc, char *argv[])
     if (engine.rootObjects().isEmpty())
         return -1;
 
+    QObject *root_object = engine.rootObjects().value(0);
+    QObject::connect(root_object, SIGNAL(shake_things_up(QString)), &photo_model, SLOT(randomize_color_values()));
+
     return app.exec();
 }

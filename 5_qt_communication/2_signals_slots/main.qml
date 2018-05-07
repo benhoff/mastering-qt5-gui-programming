@@ -6,15 +6,57 @@ import ColorPickers 1.0
 
 
 Window {
+    id: window
     visible: true
     width: 500
     height: 400
-
-    // TODO: Start coding here
+    signal shake_things_up(string my_string)
 
     ListView {
         model: photo_model
         anchors.fill: parent
+        header: Rectangle {
+            id: list_view_header
+            height: 50
+            width: parent.width
+
+            function log_the_string(emitted_string){
+                console.log(emitted_string)
+            }
+
+            Component.onCompleted: {
+                window.shake_things_up.connect(list_view_header.log_the_string);
+            }
+
+            function change_my_text()
+            {
+                rectangle_text.text = "Changing colors now"
+                timer.running = true
+            }
+
+            Timer {
+                id: timer
+                running: false
+                repeat: false
+                interval: 2000
+                onTriggered: {
+                    window.shake_things_up("now!");
+                    rectangle_text.text = "Click any item to change it's color!";
+                }
+            }
+
+            MouseArea {
+                onClicked: parent.change_my_text();
+                anchors.fill: parent
+            }
+            Text {
+                id: rectangle_text
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                text: "Click any item to change it's color!"
+            }
+        }
+
         delegate: Rectangle {
             color: decoration
             width: parent.width
@@ -30,11 +72,6 @@ Window {
             }
         }
     }
-
-
-
-
-
 
     // This dialog helps our users change the color
     Dialog {
