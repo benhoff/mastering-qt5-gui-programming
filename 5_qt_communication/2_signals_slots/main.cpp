@@ -5,6 +5,7 @@
 #include "colorpicker.h"
 
 
+
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -13,10 +14,10 @@ int main(int argc, char *argv[])
     // we're not using widgets
     QGuiApplication app(argc, argv);
 
-    QQmlApplicationEngine engine;
-
+    // this registration code to be covered in video 5.3
     qmlRegisterType<ColorPicker>("ColorPickers", 1, 0, "ColorPicker");
 
+    QQmlApplicationEngine engine;
 
     PhotoModel photo_model;
 
