@@ -24,6 +24,9 @@ public:
 
     Qt::ItemFlags flags(const QModelIndex& index) const override;
 
+public slots:
+    void randomize_color_values();
+
 private:
     void setup_virdis_values();
     QVector<QColor> colors;

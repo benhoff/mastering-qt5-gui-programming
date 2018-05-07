@@ -8,14 +8,31 @@ PhotoModel::PhotoModel(QObject *parent)
     : QAbstractListModel(parent)
 {
     setup_virdis_values();
-    QRandomGenerator random = QRandomGenerator::securelySeeded();
-	int num_colors = 100;
+    randomize_color_values();
+}
 
+void PhotoModel::randomize_color_values()
+{
+    bool update_model_index = false;
+    if (!colors.isEmpty()) {
+        colors.clear();
+        update_model_index = true;
+    }
+
+    int num_colors = 100;
     colors.reserve(num_colors);
+    QRandomGenerator random = QRandomGenerator::securelySeeded();
     for (int i = 0; i < num_colors; i++)
     {
         QColor color = _viridis_values[random.bounded(255)];
         colors.append(color);
+    }
+
+    if (update_model_index)
+    {
+        QModelIndex top_index = index(0);
+        QModelIndex bottom_index = index(num_colors - 1);
+        emit dataChanged(top_index, bottom_index);
     }
 }
 
