@@ -5,11 +5,13 @@ import QtQuick.Layouts 1.3
 
 // https://doc.qt.io/qt-5.10/qtdatavisualization-qmlmultigraph-example.html
 
+// TODO: create a ListModel
+// with ListElements
+
 Window {
     visible: true
     width: 640
     height: 480
-    title: qsTr("Hello World")
     GridLayout {
         id: grid_layout
         columns: 2
@@ -25,5 +27,28 @@ Window {
 
         }
 
+        Rectangle {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            border.color: surface_graph.theme.gridLineColor
+            border.width: 2
+
+        }
+
+        Rectangle {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            border.color: surface_graph.theme.gridLineColor
+            border.width: 2
+
+        }
+
+        Rectangle {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            border.color: surface_graph.theme.gridLineColor
+            border.width: 2
+
+        }
     }
 }
