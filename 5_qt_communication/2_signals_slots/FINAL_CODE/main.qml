@@ -10,14 +10,16 @@ Window {
     visible: true
     width: 500
     height: 400
-    signal shake_things_up(string my_string)
-    function log_the_string(emitted_string){
-        console.log(emitted_string)
+
+    signal request_new_colors(string urgency)
+
+    function _log_the_urgency(urgency)
+    {
+        console.log(urgency);
     }
 
     Component.onCompleted: {
-        window.shake_things_up.connect(window.log_the_string)
-
+        window.request_new_colors.connect(window._log_the_urgency);
     }
 
 
@@ -25,15 +27,14 @@ Window {
         model: photo_model
         anchors.fill: parent
         Component.onCompleted: {
-            function my_data_changed_slot(upper_index, lower_index, roles)
+            function my_data_changed_slot(upper_index, lower_index, role)
             {
-                if (upper_index === lower_index)
-                    console.log("Only one value changed!")
+                if (upper_index == lower_index)
+                    console.log("Only one index changed!");
                 else
-                    console.log("Multiple Values changed!")
+                    console.log("Many indexes changed!");
             }
-
-            photo_model.dataChanged.connect(my_data_changed_slot)
+            photo_model.dataChanged.connect(my_data_changed_slot);
         }
 
         header: Rectangle {
@@ -44,7 +45,9 @@ Window {
                 id: timer
                 onTriggered: {
                     // TODO: Emit our signal `request_new_colors`
-                    window.shake_things_up("now!");
+                    window.request_new_colors("now!");
+
+
                     rectangle_text.text = "Click any item to change it's color!";
                     running = false;
                 }
