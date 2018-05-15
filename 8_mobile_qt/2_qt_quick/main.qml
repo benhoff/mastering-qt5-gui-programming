@@ -5,7 +5,8 @@ import QtQuick.Controls 1.2
 import ColorPickers 1.0
 
 
-Window {
+Window{
+    // NOTE: might not need this anymore
     id: window
     visible: true
     width: 500
