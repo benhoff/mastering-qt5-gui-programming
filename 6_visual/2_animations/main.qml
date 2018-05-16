@@ -4,72 +4,99 @@ import QtQuick.Window 2.2
 
 
 Window {
+    id: window
     visible: true
     width: 640
     height: 480
 
-    Rectangle {
-        radius: 25
-    }
+    property int wiggle_value: 0
 
-    MouseArea {
-        anchors.fill: parent
-        hoverEnabled: true
-        /*
-        onPositionChanged: {
-            var x = mouseX;
-            var y = mouseY;
-            console.log(x, y)
-            // y_animation.set_mouse(y);
-            // x_animation.set_mouse(x);
-            // my_object.x = x - 25
-            // my_object.y = y - 25
-            x_animation.to = x - 25
-            y_animation.to = y - 25
-            x_animation.duration = Math.max(200, .5 * Math.abs(x-my_object.x))
-            y_animation.duration = Math.max(200, .5 * Math.abs(y - my_object.y))
-            x_animation.running = true
-            y_animation.running = true
+    Timer {
+        interval: 1500
+        onTriggered: {
+            wiggle_value = 5
+            console.log('hasdfasd')
         }
-        */
+        running: true
     }
 
-
-    // https://stackoverflow.com/questions/5833207/qml-animation-with-both-velocity-and-infinite-loops
-    // https://www.youtube.com/watch?v=rwLj-P2Oofw
-
     Rectangle {
-        id: my_object
+        id: my_rect
+        property int max_height: window.height / 5
+        property int min_height: 2 * window.height / 5
+        radius: 50
+        anchors.horizontalCenter: parent.horizontalCenter
+        color: "blue"
         width: 50
         height: 50
-        color: "green"
-        opacity:  1
+        y: min_height
 
-        NumberAnimation on x{
-            id: x_animation
-            from: my_object.x
-
-            function set_mouse(mouse_x)
-            {
-                var x_obj = my_object.x;
-                duration = 50 * Math.abs(x_obj - mouse_x);
-                to = mouse_x;
-            }
+        Component.onCompleted: {
+            my_animation.stopped.connect(function(){ready_button.visible = true;});
         }
 
-        // https://stackoverflow.com/questions/40467872/dynamically-change-from-to-values-used-in-animations
-        NumberAnimation on y{
-            id: y_animation
-            from: my_object.y
+        SequentialAnimation on y {
+            id: my_animation
+            // loops: Animation.Infinite
+            loops: 3
 
-            function set_mouse(mouse_y)
-            {
-                var y_obj = my_object.y;
-                duration = 50 * Math.abs(y_obj - mouse_y);
-                from = y_obj
-                to = mouse_y;
+            NumberAnimation {
+                from: my_rect.min_height
+                to: my_rect.max_height
+                easing.type: Easing.OutExpo
+                duration: 300
+            }
+            NumberAnimation {
+                from: my_rect.max_height
+                to: my_rect.min_height
+                easing.type: Easing.OutBounce;
+                duration: 1000
+            }
+
+            PauseAnimation {
+                duration: 500
             }
         }
-
     }
+
+    Button {
+        // anchors.horizontalCenter: parent.horizontalCenter
+        id: ready_button
+        y: window.height / 3
+        anchors.horizontalCenter: parent.horizontalCenter
+        // visible: false
+        text: "Launch App"
+        transform: Rotation {
+            id: my_rotation
+            origin: Item.Center
+            angle: window.wiggle_value
+            Behavior on angle {
+                SequentialAnimation {
+                    NumberAnimation {
+                        duration: 60
+                    }
+                    NumberAnimation {
+                        from: 5
+                        to: 0
+                        duration: 60
+                    }
+
+                    PauseAnimation {
+                        duration: 200
+                    }
+                    NumberAnimation {
+                        from: 0
+                        to: -5
+                        duration: 60
+                    }
+                    NumberAnimation {
+                        from: -5
+                        to: 0
+                        duration: 60
+                    }
+                }
+            }
+        }
+    }
+
 }
