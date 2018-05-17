@@ -5,6 +5,11 @@
 #include <QMenuBar>
 #include <Qt3DRender/QCamera>
 #include <Qt3DExtras/QTextureMaterial>
+#include <Qt3DExtras/QPlaneMesh>
+#include <Qt3DRender/QRenderSurfaceSelector>
+#include <Qt3DRender/QClearBuffers>
+#include <Qt3DRender/QLayerFilter>
+#include <Qt3DRender/QCameraSelector>
 
 Q_DECLARE_METATYPE(QCameraInfo)
 
@@ -18,20 +23,67 @@ MainWindow::MainWindow(QWidget *parent)
     
     setCentralWidget(_central_widget);
     _root_entity = new Qt3DCore::QEntity();
-    Qt3DRender::QCamera *camera_entity = _view->camera();
-    // 2d scene
-    // https://stackoverflow.com/questions/46821234/qt3d-qtquick-scene2d-using-c
+
+    Qt3DRender::QRenderSurfaceSelector *rendor_surface_selector = new Qt3DRender::QREnderSurfaceSelector();
+
+    // First branch clear the buffers
+    Qt3DRender::QClearBuffers *clear_buffers = new Qt3DRender::QClearBuffers(rendor_surface_selector);
+    clear_buffers->setBuffers(Qt3DRender::QClearBuffers::ColorDepthBuffer);
+
+
+    // Second branch
+    // Custom framegraph for background image
+    Qt3DRender::QLayerFilter *background_layer_filter = new Qt3DRender::QLayerFilter(rendor_surface_selector);
+    Qt3DRender::QLayer *background_layer = new Qt3DRender::QLayer(background_layer_filter);
+    background_layer_filter->addLayer(background_layer);
+    Qt3DRender::QCameraSelector *camera_selector = new Qt3DRender::QCameraSelector(background_layer);
+    Qt3DRender::QCamera background_camera = new Qt3DRender::QCamera(camera_selector);
+    background_camera->lens()->setOrthographicProjection(-1, 1, -1, 1, 0.1f, 1000.f);
+    backgroun_camera->setPosition(QVector3D(0, 0, 1));
+    background_camera->setViewCenter(QVector3D(0, 0, 0));
+    background_camera->setUpVector(QVector3D(0, 1, 0));
+    camera_selector->setCamera(backgroundCamera);
+
+    // third branch
+    // framegraph for objects
+    // FIXME
+
+    // https://github.com/qt/qt3d/blob/5.11/tests/manual/video-texture-qml/main.qml
+
+
+    // set the new framegraph
+    _view->setActiveFrameGraph(rendor_surface_selector);
+    _view->renderSettings()->setRenderPolicy(Qt3DRender::QRenderSettings::OnDemand);
+
+
+    // root entity
+    Qt3DCore::QEntity *plane_entity = new Qt3DCore::QEntity(_root_entity);
+    Qt3DExtras::QPlaneMesh *plane_mesh = new Qt3DExtras::QPlaneMesh(plane_entity);
+
+    // plane_mesh->setHeight(2);
+    // plane_mesh->setWidth(2);
+
+    Qt3DExtras::QTextureMaterial *plane_material = new Qt3DExtras::QTextureMaterial(plane_entity);
+    Texture2D *plane_texture_image = new Texture2D(plane_material);
+
+    // Add texture image?
+    plane_material->setTexture(plane_texture_image);
+
     /*
-    cameraEntity->setPosition(QVector3D(0, 0, 50.0f));
-    cameraEntity->setUpVector(QVector3D(0, 1, 0));
-    cameraEntity->setViewCenter(QVector3D(0, 0, 0));
+    Qt3DCore::QTransform *planeTransform = new Qt3DCore::QTransform(planeEntity);
+    planeTransform->setRotationX(90);
+    planeTransform->setTranslation(QVector3D(0, 0, 0));
+
+    planeEntity->addComponent(planeMesh);
+    planeEntity->addComponent(planeMaterial);
+    planeEntity->addComponent(planeTransform);
+    planeEntity->addComponent(backgroundLayer);
     */
 
-    // steps: https://doc.qt.io/qt-5.10/qt3drender-qmaterial.html
+// https://doc.qt.io/archives/4.6/opengl-framebufferobject.html
+// http://interest.qt-project.narkive.com/cKrvD9nr/synchronous-update-of-qt3d-texture-data
 
-    // NOTE: probably want a 2D texture instead
-    // texture material?
-    // https://doc.qt.io/qt-5.10/qt3dextras-qtexturematerial.html#details
+
 
     // QTextureMaterial -> QTexture2D -> QTextureImageData (Gene'd by TextureGenerator)
     
