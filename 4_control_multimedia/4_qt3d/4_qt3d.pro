@@ -6,24 +6,8 @@
 
 QT       += core gui multimedia widgets 3dcore 3drender 3dextras
 
-TARGET = opencv
+TARGET = 4_qt3d
 TEMPLATE = app
-
-# https://wiki.qt.io/How_to_setup_Qt_and_openCV_on_Windows
-
-# NOTE: for windows need to add the correct include path!
-# INCLUDEPATH += D:\opencv\build\include
-INCLUDEPATH += \
-    /usr/include/opencv2
-
-
- # NOTE: see here for windows http://doc.qt.io/qt-5/qmake-variable-reference.html#libs
-!contains(QT_CONFIG, no-pkg-config) {
-    CONFIG += link_pkgconfig
-    PKGCONFIG += opencv
-} else {
-    LIBS += -lopencv_core -lopencv_imgproc -lopencv_objdetect
-}
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which has been marked as deprecated (the exact warnings
@@ -36,22 +20,5 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-# https://stackoverflow.com/questions/19066593/copy-a-file-to-build-directory-after-compiling-project-with-qt
-
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
-    videosurface.cpp \
-    texture2d.cpp
-
-HEADERS += \
-        mainwindow.h \
-    videosurface.h \
-    texture2d.h
-
-# https://stackoverflow.com/a/39234363/2701402
-copydata.commands = $(COPY_FILE) \"$$shell_path($$PWD\\haarcascade_frontalface_default.xml)\" \"$$shell_path($$OUT_PWD)\"
-first.depends = $(first) copydata
-export(first.depends)
-export(copydata.commands)
-QMAKE_EXTRA_TARGETS += first copydata
+        main.cpp
