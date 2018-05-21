@@ -12,10 +12,10 @@ Window {
     property int wiggle_value: 0
 
     Timer {
-        interval: 1500
+        interval: 500
+        // interval: 1500
         onTriggered: {
             wiggle_value = 5
-            console.log('hasdfasd')
         }
         running: true
     }
@@ -62,13 +62,18 @@ Window {
     Button {
         // anchors.horizontalCenter: parent.horizontalCenter
         id: ready_button
-        y: window.height / 3
+        y: 2* window.height / 3
         anchors.horizontalCenter: parent.horizontalCenter
         // visible: false
         text: "Launch App"
+        Component.onCompleted: {
+            console.log(x, y, height, width)
+        }
+
         transform: Rotation {
             id: my_rotation
-            origin: Item.Center
+            origin.x: ready_button.width/2
+            origin.y: ready_button.height/2
             angle: window.wiggle_value
             Behavior on angle {
                 SequentialAnimation {
@@ -77,23 +82,21 @@ Window {
                     }
                     NumberAnimation {
                         from: 5
-                        to: 0
-                        duration: 60
-                    }
-
-                    PauseAnimation {
-                        duration: 200
-                    }
-                    NumberAnimation {
-                        from: 0
                         to: -5
                         duration: 60
                     }
                     NumberAnimation {
                         from: -5
                         to: 0
-                        duration: 60
                     }
+
+                    PauseAnimation {
+                        duration: {
+
+                            return 500
+                        }
+                    }
+                    loops: 5
                 }
             }
         }
