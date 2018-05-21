@@ -1,5 +1,5 @@
 #include <QGuiApplication>
-#include <QQmlApplicationEngine>
+#include <Qt3DQuickExtras/Qt3DQuickWindow>
 
 int main(int argc, char *argv[])
 {
@@ -7,10 +7,8 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
 
-    QQmlApplicationEngine engine;
-    engine.load(QUrl(QStringLiteral("qrc:/main.qml")));
-    if (engine.rootObjects().isEmpty())
-        return -1;
+    Qt3DExtras::Quick::Qt3DQuickWindow view;
+    view.setSource(QUrl(QStringLiteral("qrc:/main.qml")));
 
     return app.exec();
 }
