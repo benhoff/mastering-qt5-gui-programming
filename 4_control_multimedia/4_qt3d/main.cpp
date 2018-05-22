@@ -27,58 +27,60 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    Qt3DExtras::Qt3DWindow *view = new Qt3DExtras::Qt3DWindow();
-    view->defaultFrameGraph()->setClearColor(QColor("white"));
 
-    QWidget *container = QWidget::createWindowContainer(view);
-    QSize screen_size = view->screen()->size();
-    container->setMinimumSize(QSize(200, 100));
-    container->setMaximumSize(screen_size);
 
-    Qt3DCore::QEntity *root_entity = new Qt3DCore::QEntity();
 
-   Qt3DRender::QCamera *camera_entity = view->camera();
+
+
+
+    // NOTE: Grab window size out, set `window_container` min/maximums
+    /*
+    QSize screen_size = window->screen()->size();
+    window_container->setMinimumSize(QSize(200, 100));
+    window_container->setMaximumSize(screen_size);
+    */
+
+    // TODO: Create root entity & set on window
+
+    /*
+   Qt3DRender::QCamera *camera_entity = window->camera();
    camera_entity->lens()->setPerspectiveProjection(45.0f, 16.0f/9.0f, 0.1f, 1000.0f);
    camera_entity->setPosition(QVector3D(0, 0, 20.0f));
    camera_entity->setUpVector(QVector3D(0, 1, 0));
    camera_entity->setViewCenter(QVector3D(0, 0, 0));
+   */
 
    Qt3DCore::QEntity *light_entity = new Qt3DCore::QEntity(root_entity);
    Qt3DRender::QPointLight *light = new Qt3DRender::QPointLight(light_entity);
+
+   /*
    light->setColor("white");
    light->setIntensity(1);
-   light_entity->addComponent(light);
+   */
 
-   Qt3DCore::QTransform *lightTransform = new Qt3DCore::QTransform(light_entity);
-   lightTransform->setTranslation(camera_entity->position());
-   light_entity->addComponent(lightTransform);
-
-
-   Qt3DExtras::QFirstPersonCameraController *cam_controller = new Qt3DExtras::QFirstPersonCameraController(root_entity);
-   cam_controller->setCamera(camera_entity);
-
-   Qt3DCore::QEntity *sphere_entity = new Qt3DCore::QEntity(root_entity);
-   Qt3DExtras::QSphereMesh *sphere_mesh = new Qt3DExtras::QSphereMesh();
+    /*
    sphere_mesh->setRings(30);
    sphere_mesh->setSlices(30);
    sphere_mesh->setRadius(3);
+   */
 
-   Qt3DCore::QTransform *sphere_transform = new Qt3DCore::QTransform();
+   // sphere_lighting->setDiffuse(QColor(QRgb(0xa69929)));
+
+
+    /*
    sphere_transform->setScale(1.2f);
    sphere_transform->setTranslation(QVector3D(0.0f, 0.0f, 1.0f));
+   */
 
-   Qt3DExtras::QPhongMaterial *sphere_material = new Qt3DExtras::QPhongMaterial();
-   sphere_material->setDiffuse(QColor(QRgb(0xa69929)));
-
-
-   sphere_entity->addComponent(sphere_mesh);
-   sphere_entity->addComponent(sphere_material);
-   sphere_entity->addComponent(sphere_transform);
+   // FIXME: is this needed?
    sphere_entity->setEnabled(true);
 
-   view->setRootEntity(root_entity);
+   // NOTE: this code sets up a first person controller for our camera
+   Qt3DExtras::QFirstPersonCameraController *cam_controller = new Qt3DExtras::QFirstPersonCameraController(root_entity);
+   cam_controller->setCamera(camera_entity);
 
-    container->show();
+
+    // FIXME: do we need this?
     container->resize(1200, 800);
 
     return a.exec();
