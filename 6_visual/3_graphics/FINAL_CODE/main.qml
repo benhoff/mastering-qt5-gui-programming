@@ -1,33 +1,8 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Window 2.2
+import QtQuick.Particles 2.0
 
-import Qt3D.Core 2.0
-import Qt3D.Render 2.0
-import Qt3D.Input 2.0
-import Qt3D.Extras 2.0
-
-// https://stackoverflow.com/questions/46720044/how-to-mix-qt3d-and-default-qtquick-controls
-Entity {
-    Camera {
-        id: camera
-        projectionType: CameraLens.PerspectiveProjection
-        fieldOfView: 45
-        aspectRatio: _window.width / _window.height
-        nearPlane: 0.1
-        farPlane: 1000.0
-        position: Qt.vector3d(0.0, 10.0, 20.0)
-        viewCenter: Qt.vector3d(0.0, 0.0, 0.0)
-        upVector:  Qt.vector3d(0.0, 1.0, 0.0)
-    }
-
-    FirstPersonCameraController {camera: camera}
-
-    components: [
-
-    ]
-
-}
 
 Window {
     id: window
@@ -35,17 +10,6 @@ Window {
     width: 640
     height: 480
 
-    property int wiggle_value: 0
-
-
-    Timer {
-        interval: 500
-        // interval: 1500
-        onTriggered: {
-            wiggle_value = 5
-        }
-        running: true
-    }
     Rectangle {
         anchors.fill: parent
 
@@ -126,39 +90,47 @@ Window {
             id: ready_button
             y: 2* window.height / 3
             anchors.horizontalCenter: parent.horizontalCenter
-            // visible: false
             text: "Launch App"
-            Component.onCompleted: {
-                console.log(x, y, height, width)
+
+            property int wiggle_value: 0
+
+            Timer {
+                property bool first: true
+                interval: 1500
+                onTriggered: {
+                    if (ready_button.wiggle_value == 0)
+                        ready_button.wiggle_value = 10;
+                    else
+                        ready_button.wiggle_value = 0
+
+                    if (first)
+                        interval = 3000;
+
+                }
+                running: true
+                repeat: true
             }
 
             transform: Rotation {
-                id: my_rotation
                 origin.x: ready_button.width/2
                 origin.y: ready_button.height/2
-                angle: window.wiggle_value
+                angle: ready_button.wiggle_value
                 Behavior on angle {
                     SequentialAnimation {
-                        NumberAnimation {
+                        NumberAnimation{
                             duration: 60
                         }
-                        NumberAnimation {
-                            from: 5
-                            to: -5
-                            duration: 60
+                        NumberAnimation{
+                            // NOTE: Must use real numbers here
+                            // Cannot use `ready_button.wiggle_value`
+                            to: -10
+                            duration: 120
                         }
-                        NumberAnimation {
-                            from: -5
+                        NumberAnimation{
                             to: 0
+                            duration: 60
                         }
-
-                        PauseAnimation {
-                            duration: {
-
-                                return 500
-                            }
-                        }
-                        loops: 5
+                        loops: 2
                     }
                 }
             }
