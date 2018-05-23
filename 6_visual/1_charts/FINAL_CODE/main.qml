@@ -12,15 +12,16 @@ ApplicationWindow{
     header: ToolBar {
         ToolButton {
             text: "Add Scatter"
-            property bool clicked: false
+            property bool _already_created: false
             onClicked: {
-                if (clicked)
+                if (_already_created)
                     return;
 
                 var scatter_x = chart_view.axisX(line_series);
                 var scatter_y = chart_view.axisY(line_series);
                 var scatter = chart_view.createSeries(ChartView.SeriesTypeScatter, "scatter", scatter_x, scatter_y)
                 _add_data_to_series(scatter)
+                _already_created = true
             }
         }
     }
