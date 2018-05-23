@@ -35,7 +35,7 @@ ApplicationWindow{
             var list_element = data.shared_data.get(i);
 
             var speed = list_element.speed;
-            var year = Date.fromLocaleString(Qt.locale(), list_element.date, "MMMM d, yyyy")
+            var year = Date.parse(list_element.date)
 
             series.append(speed, year)
         }
