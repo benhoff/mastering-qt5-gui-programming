@@ -49,7 +49,6 @@ void ColorPicker::set_color(QColor color)
     // NOTE: should actually check if the color is in the index
     current_color = color;
 
-    delete pix; pix=0;
     repaint();
     emit new_color(current_color);
 }
