@@ -128,8 +128,16 @@ Window {
                     anchors.fill: parent
                     onPositionChanged: {
                         if (pressed) {
-                            crosshairs.y = mouse.y - crosshairs.radius
-                            color_dialog._color = parent.y_to_color(mouse.y)
+                            var y = mouse.y
+                            // don't go less than zero
+                            if (y < 0)
+                                y = 0;
+                            // don't go more than the picture
+                            if (y > parent.height)
+                                y = parent.height
+                            crosshairs.y = y - crosshairs.radius
+
+                            color_dialog._color = parent.y_to_color(y)
                         }
                     }
                     onPressed: positionChanged(mouse)
@@ -155,10 +163,6 @@ Window {
                     var column_number = 0;
                     var q_model_index = photo_model.index(color_dialog.index, column_number);
                     photo_model.setData(q_model_index, color_dialog.get_color(), "decoration");
-
-
-
-
 
                     color_dialog.close()
                 }

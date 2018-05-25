@@ -6,7 +6,7 @@
 
 QT       += core gui quick
 
-TARGET = model
+TARGET = qml-colors
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
@@ -31,7 +31,8 @@ HEADERS += \
     colorpicker.h
 
 DISTFILES += \
-    main.qml
+    main.qml 
 
 RESOURCES += \
     qml.qrc
+
