@@ -16,40 +16,10 @@
 #include <Qt3DExtras/qt3dwindow.h>
 #include <Qt3DExtras/qfirstpersoncameracontroller.h>
 
-#include <Qt3DCore/QTransform>
 #include <QPropertyAnimation>
 
-class RotateTransform : public QTransform
-{
-    Q_OBJECT
-    Q_PROPERTY(float user_angle READ get_user_angle WRITE set_user_angle NOTIFY notify_angle_changed)
-public:
-    RotateTransform() :
-        _user_angle(0.0)
-    {
-        conect(this, &MyTransform::notify_angle_changed, this, &MyTransform::rotate);
-    }
+#include "rotatetransform.h"
 
-    float get_user_angle() { return _user_angle;}
-    void set_user_angle(float new angle)
-    {
-        _user_angle = new_angle;
-    }
-
-public signals:
-    void notify_angle_changed();
-private slots:
-    void rotate()
-    {
-       QMatrix4x4 matrix;
-       matrix.rotate(_user_angle, QVector3D(0, 1, 0));
-       matrix.translate(QVector3D(20, 0, 0));
-       setMatrix(matrix);
-    }
-
-private:
-    float _user_angle;
-}
 
 int main(int argc, char *argv[])
 {
@@ -111,6 +81,7 @@ int main(int argc, char *argv[])
    my_animation->setEndValue(360);
    // infinite
    my_animation->setLoopCount(-1);
+   my_animation->start();
 
    Qt3DCore::QEntity *rotating_sphere = new Qt3DCore::QEntity(root_entity);
    rotating_sphere->addComponent(sphere_mesh);
