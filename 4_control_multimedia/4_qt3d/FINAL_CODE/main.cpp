@@ -19,12 +19,14 @@
 #include <Qt3DCore/QTransform>
 #include <QPropertyAnimation>
 
-class MyTransform : public QTransform
+class RotateTransform : public QTransform
 {
     Q_OBJECT
     Q_PROPERTY(float user_angle READ get_user_angle WRITE set_user_angle NOTIFY notify_angle_changed)
 public:
-    MyTransform(){
+    RotateTransform() :
+        _user_angle(0.0)
+    {
         conect(this, &MyTransform::notify_angle_changed, this, &MyTransform::rotate);
     }
 
@@ -101,10 +103,9 @@ int main(int argc, char *argv[])
    sphere_entity->addComponent(sphere_transform);
    sphere_entity->setEnabled(true);
 
-   MyTransform *my_transform = new MyTransform();
-   Qt3DCore::QTransform *rotate_transform = new Qt3DCore::QTransform();
+   RotateTransform *rotate_transform = new RotateTransform();
 
-   QPropertyAnimation *my_animation = new QPropertyAnimation(my_transform, "user_angle");
+   QPropertyAnimation *my_animation = new QPropertyAnimation(rotate_transform, "user_angle");
    my_animation->setDuration(10000);
    my_animation->setStartValue(0);
    my_animation->setEndValue(360);
@@ -114,7 +115,7 @@ int main(int argc, char *argv[])
    Qt3DCore::QEntity *rotating_sphere = new Qt3DCore::QEntity(root_entity);
    rotating_sphere->addComponent(sphere_mesh);
    rotating_sphere->addComponent(sphere_material);
-   rotating_sphere->addComponent(my_transform);
+   rotating_sphere->addComponent(rotate_transform);
    view->setRootEntity(root_entity);
 
     container->show();
