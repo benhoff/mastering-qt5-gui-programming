@@ -2,19 +2,11 @@
 #include <QWidget>
 #include <QScreen>
 
-#include <Qt3DExtras/qtorusmesh.h>
 #include <Qt3DRender/qmesh.h>
-#include <Qt3DRender/qtechnique.h>
-#include <Qt3DRender/qmaterial.h>
-#include <Qt3DRender/qeffect.h>
-#include <Qt3DRender/qtexture.h>
-#include <Qt3DRender/qrenderpass.h>
-#include <Qt3DRender/qsceneloader.h>
 #include <Qt3DRender/qpointlight.h>
 #include <Qt3DRender/QCamera>
 
 #include <Qt3DCore/qtransform.h>
-#include <Qt3DCore/qaspectengine.h>
 #include <Qt3DExtras/QPhongMaterial>
 
 #include <Qt3DRender/qrenderaspect.h>
@@ -23,6 +15,24 @@
 
 #include <Qt3DExtras/qt3dwindow.h>
 #include <Qt3DExtras/qfirstpersoncameracontroller.h>
+
+#include <Qt3DCore/QTransform>
+#include <QPropertyAnimation>
+
+class TransformHelper
+{
+    Q_OBJECT
+    Q_PROPERTY(float user_angle READ get_user_angle WRITE set_user_angle NOTIFY notify_angle_changed)
+public:
+    float get_user_angle() { return _user_angle;}
+    void set_user_angle(float new angle) { _user_angle = new_angle;}
+
+private:
+    float _user_angle;
+public signals:
+    void notify_angle_changed();
+
+}
 
 int main(int argc, char *argv[])
 {
@@ -61,7 +71,7 @@ int main(int argc, char *argv[])
    Qt3DExtras::QSphereMesh *sphere_mesh = new Qt3DExtras::QSphereMesh();
    sphere_mesh->setRings(30);
    sphere_mesh->setSlices(30);
-   sphere_mesh->setRadius(3);
+   sphere_mesh->setRadius(2);
 
    Qt3DCore::QTransform *sphere_transform = new Qt3DCore::QTransform();
    sphere_transform->setScale(1.2f);
@@ -76,6 +86,26 @@ int main(int argc, char *argv[])
    sphere_entity->addComponent(sphere_transform);
    sphere_entity->setEnabled(true);
 
+   TransformHelper my_transform;
+   Qt3DCore::QTransform *rotate_transform = new Qt3DCore::QTransform();
+
+   QPropertyAnimation *my_animation = new QPropertyAnimation(&my_transform, "user_angle");
+   QObject::connect(&my_transform, &TransformHelper::notify_angle_changed, [rotate_transform, my_transform](){
+       QMatrix4x4 matrix;
+       matrix.rotate(my_transform.get_user_angle(), QVector3D(0, 1, 0));
+       matrix.translate(QVector3D(20, 0, 0));
+       rotate_transform->setMatrix(matrix);
+   })
+   my_animation->setDuration(10000);
+   my_animation->setStartValue(0);
+   my_animation->setEndValue(360);
+   // infinite
+   my_animation->setLoopCount(-1);
+
+   Qt3DCore::QEntity *rotating_sphere = new Qt3DCore::QEntity(root_entity);
+   rotating_sphere->addComponent(sphere_mesh);
+   rotating_sphere->addComponent(sphere_material);
+   rotating_sphere->addComponent(rotate_transform);
    view->setRootEntity(root_entity);
 
     container->show();
