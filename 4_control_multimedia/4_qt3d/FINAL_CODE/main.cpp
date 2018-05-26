@@ -19,19 +19,34 @@
 #include <Qt3DCore/QTransform>
 #include <QPropertyAnimation>
 
-class TransformHelper
+class MyTransform : public QTransform
 {
     Q_OBJECT
     Q_PROPERTY(float user_angle READ get_user_angle WRITE set_user_angle NOTIFY notify_angle_changed)
 public:
+    MyTransform(){
+        conect(this, &MyTransform::notify_angle_changed, this, &MyTransform::rotate);
+    }
+
     float get_user_angle() { return _user_angle;}
-    void set_user_angle(float new angle) { _user_angle = new_angle;}
+    void set_user_angle(float new angle)
+    {
+        _user_angle = new_angle;
+    }
+
+public signals:
+    void notify_angle_changed();
+private slots:
+    void rotate()
+    {
+       QMatrix4x4 matrix;
+       matrix.rotate(_user_angle, QVector3D(0, 1, 0));
+       matrix.translate(QVector3D(20, 0, 0));
+       setMatrix(matrix);
+    }
 
 private:
     float _user_angle;
-public signals:
-    void notify_angle_changed();
-
 }
 
 int main(int argc, char *argv[])
@@ -86,16 +101,10 @@ int main(int argc, char *argv[])
    sphere_entity->addComponent(sphere_transform);
    sphere_entity->setEnabled(true);
 
-   TransformHelper my_transform;
+   MyTransform *my_transform = new MyTransform();
    Qt3DCore::QTransform *rotate_transform = new Qt3DCore::QTransform();
 
-   QPropertyAnimation *my_animation = new QPropertyAnimation(&my_transform, "user_angle");
-   QObject::connect(&my_transform, &TransformHelper::notify_angle_changed, [rotate_transform, my_transform](){
-       QMatrix4x4 matrix;
-       matrix.rotate(my_transform.get_user_angle(), QVector3D(0, 1, 0));
-       matrix.translate(QVector3D(20, 0, 0));
-       rotate_transform->setMatrix(matrix);
-   })
+   QPropertyAnimation *my_animation = new QPropertyAnimation(my_transform, "user_angle");
    my_animation->setDuration(10000);
    my_animation->setStartValue(0);
    my_animation->setEndValue(360);
@@ -105,7 +114,7 @@ int main(int argc, char *argv[])
    Qt3DCore::QEntity *rotating_sphere = new Qt3DCore::QEntity(root_entity);
    rotating_sphere->addComponent(sphere_mesh);
    rotating_sphere->addComponent(sphere_material);
-   rotating_sphere->addComponent(rotate_transform);
+   rotating_sphere->addComponent(my_transform);
    view->setRootEntity(root_entity);
 
     container->show();
