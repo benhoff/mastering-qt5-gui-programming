@@ -9,19 +9,19 @@ ApplicationWindow{
     width: 640
     height: 480
 
-    function _add_data_to_series(series){
-        for (var i =0; i < land_speed.shared_data.count; i++) {
-            var list_element = land_speed.shared_data.get(i);
-
-            series.append(speed, year)
-        }
-    }
 
         /*
         Component.onCompleted: {
             _add_data_to_series(line_series)
         }
         */
+
+    function _add_data_to_series(series){
+        for (var i =0; i < land_speed.shared_data.count; i++) {
+            var list_element = land_speed.shared_data.get(i);
+
+        }
+    }
 
     header: ToolBar {
         ToolButton {
