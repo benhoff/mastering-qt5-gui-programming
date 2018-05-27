@@ -14,33 +14,38 @@ Window {
     Rectangle {
         anchors.fill: parent
 
-        gradient: Gradient {
-            GradientStop {position: 0.0; color: "black"}
-            GradientStop{position: 1.0; color: "blue"}
-        }
 
-        ParticleSystem {
-            anchors.fill: parent
-            ImageParticle {
-                source: "qrc:///particleresources/glowdot.png"
-                opacity: 0.25
-            }
-            Emitter {
-                width: parent.width
-                height: 150
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 3
-                lifeSpan: 15000
-                startTime: 15000
-                emitRate: 5
-                size: 24
-                sizeVariation: 16
-                acceleration: PointDirection{y: -6; xVariation: 2; yVariation: 2}
-            }
+        Rectangle {
+            id: my_rect
+            property int max_height: window.height / 5
+            property int min_height: 2 * window.height / 5
+            radius: 50
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "blue"
+            width: 50
+            height: 50
+            y: min_height
 
-            Wander {
-                xVariance: 25
-                pace: 25
+            SequentialAnimation on y {
+                id: my_animation
+                loops: 3
+
+                NumberAnimation {
+                    from: my_rect.min_height
+                    to: my_rect.max_height
+                    easing.type: Easing.OutExpo
+                    duration: 300
+                }
+                NumberAnimation {
+                    from: my_rect.max_height
+                    to: my_rect.min_height
+                    easing.type: Easing.OutBounce;
+                    duration: 1000
+                }
+
+                PauseAnimation {
+                    duration: 500
+                }
             }
         }
 
