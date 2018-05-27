@@ -9,4 +9,11 @@ Window {
     width: 640
     height: 480
 
+    /*
+        property int min_height: 2 * window.height / 5
+        property int max_height: window.height / 5
+        anchors.horizontalCenter: parent.horizontalCenter
+    */
+
+
 }
