@@ -12,6 +12,7 @@ Window {
 
     // NOTE: Added in rectangle from last example
     Rectangle {
+        anchors.fill: parent
 
 
         Rectangle {
