@@ -24,73 +24,74 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    Qt3DExtras::Qt3DWindow *view = new Qt3DExtras::Qt3DWindow();
-    view->defaultFrameGraph()->setClearColor(QColor("white"));
 
-    QWidget *container = QWidget::createWindowContainer(view);
-    QSize screen_size = view->screen()->size();
-    container->setMinimumSize(QSize(200, 100));
-    container->setMaximumSize(screen_size);
+    Qt3DExtras::Qt3DWindow *window = new Qt3DExtras::Qt3DWindow();
+    Qt3DExtras::QForwardRenderer *forward_render = window->defaultFrameGraph();
 
+    forward_render->setClearColor(QColor("white"));
+    QWidget *window_container = QWidget::createWindowContainer(window);
+
+
+    // NOTE: Grab window size out, set `window_container` min/maximums
+    QSize screen_size = window->screen()->size();
+    window_container->setMinimumSize(QSize(200, 100));
+    window_container->setMaximumSize(screen_size);
+
+    // TODO: Create root entity & set on window
     Qt3DCore::QEntity *root_entity = new Qt3DCore::QEntity();
+    window->setRootEntity(root_entity);
 
-   Qt3DRender::QCamera *camera_entity = view->camera();
-   camera_entity->lens()->setPerspectiveProjection(45.0f, 16.0f/9.0f, 0.1f, 1000.0f);
-   camera_entity->setPosition(QVector3D(0, 0, 20.0f));
-   camera_entity->setUpVector(QVector3D(0, 1, 0));
-   camera_entity->setViewCenter(QVector3D(0, 0, 0));
+    Qt3DRender::QCamera *camera_entity = window->camera();
+    camera_entity->lens()->setPerspectiveProjection(45.0f, 16.0f/9.0f, 0.1f, 1000.0f);
+    camera_entity->setPosition(QVector3D(0, 0, 20.0f));
+    camera_entity->setUpVector(QVector3D(0, 1, 0));
+    camera_entity->setViewCenter(QVector3D(0, 0, 0));
 
-   Qt3DCore::QEntity *light_entity = new Qt3DCore::QEntity(root_entity);
-   Qt3DRender::QPointLight *light = new Qt3DRender::QPointLight(light_entity);
-   light->setColor("white");
-   light->setIntensity(1);
-   light_entity->addComponent(light);
+    Qt3DCore::QEntity *light_entity = new Qt3DCore::QEntity(root_entity);
+    // `QPointLight` is a component and will need to be added
+    // to the `light_entity`
+    Qt3DRender::QPointLight *point_light_component = new Qt3DRender::QPointLight();
+    point_light_component->setColor("white");
+    point_light_component->setIntensity(1);
+    light_entity->addComponent(point_light_component);
 
-   Qt3DCore::QTransform *lightTransform = new Qt3DCore::QTransform(light_entity);
-   lightTransform->setTranslation(camera_entity->position());
-   light_entity->addComponent(lightTransform);
-
-
-   Qt3DExtras::QFirstPersonCameraController *cam_controller = new Qt3DExtras::QFirstPersonCameraController(root_entity);
-   cam_controller->setCamera(camera_entity);
-
-   Qt3DCore::QEntity *sphere_entity = new Qt3DCore::QEntity(root_entity);
-   Qt3DExtras::QSphereMesh *sphere_mesh = new Qt3DExtras::QSphereMesh();
-   sphere_mesh->setRings(30);
-   sphere_mesh->setSlices(30);
-   sphere_mesh->setRadius(2);
-
-   Qt3DCore::QTransform *sphere_transform = new Qt3DCore::QTransform();
-   sphere_transform->setScale(1.2f);
-   sphere_transform->setTranslation(QVector3D(0.0f, 0.0f, 1.0f));
-
-   Qt3DExtras::QPhongMaterial *sphere_material = new Qt3DExtras::QPhongMaterial();
-   sphere_material->setDiffuse(QColor(QRgb(0xa69929)));
+    Qt3DCore::QTransform *light_transform = new Qt3DCore::QTransform();
+    light_transform->setTranslation(camera_entity->position());
+    light_entity->addComponent(light_transform);
 
 
-   sphere_entity->addComponent(sphere_mesh);
-   sphere_entity->addComponent(sphere_material);
-   sphere_entity->addComponent(sphere_transform);
-   sphere_entity->setEnabled(true);
+    // TODO: Create First person Camera Controller
+    Qt3DExtras::QFirstPersonCameraController *cam_controller = new Qt3DExtras::QFirstPersonCameraController(root_entity);
+    cam_controller->setCamera(camera_entity);
 
-   RotateTransform *rotate_transform = new RotateTransform();
+    Qt3DCore::QEntity *sphere_entity = new Qt3DCore::QEntity(root_entity);
 
-   QPropertyAnimation *my_animation = new QPropertyAnimation(rotate_transform, "user_angle");
-   my_animation->setDuration(10000);
-   my_animation->setStartValue(0);
-   my_animation->setEndValue(360);
-   // infinite
-   my_animation->setLoopCount(-1);
-   my_animation->start();
+    Qt3DExtras::QSphereMesh *mesh = new Qt3DExtras::QSphereMesh();
+    mesh->setRings(30);
+    mesh->setSlices(30);
+    mesh->setRadius(2);
 
-   Qt3DCore::QEntity *rotating_sphere = new Qt3DCore::QEntity(root_entity);
-   rotating_sphere->addComponent(sphere_mesh);
-   rotating_sphere->addComponent(sphere_material);
-   rotating_sphere->addComponent(rotate_transform);
-   view->setRootEntity(root_entity);
+    sphere_entity->addComponent(mesh);
 
-    container->show();
-    container->resize(1200, 800);
+    Qt3DExtras::QPhongMaterial *sphere_material = new Qt3DExtras::QPhongMaterial();
+    sphere_material->setDiffuse(QColor(QRgb(0xa69929)));
 
+    sphere_entity->addComponent(sphere_material);
+
+    Qt3DCore::QEntity *rotating_sphere = new Qt3DCore::QEntity(root_entity);
+    rotating_sphere->addComponent(mesh);
+    rotating_sphere->addComponent(sphere_material);
+
+    RotateTransform *rotate_transform = new RotateTransform();
+    QPropertyAnimation *rotation_animation = new QPropertyAnimation(rotate_transform, "user_angle");
+    rotation_animation->setStartValue(0);
+    rotation_animation->setEndValue(360);
+    rotation_animation->setDuration(10000);
+    rotation_animation->setLoopCount(-1); // infinite loops
+    rotation_animation->start();          // start looping
+
+    rotating_sphere->addComponent(rotate_transform);
+
+    window_container->show();
     return a.exec();
 }
