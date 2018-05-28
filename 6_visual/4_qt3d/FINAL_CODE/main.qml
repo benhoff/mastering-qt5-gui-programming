@@ -5,8 +5,6 @@ import Qt3D.Input 2.0
 import Qt3D.Extras 2.0
 
 Entity {
-    id: scene_root
-
     Camera {
         id: camera
         projectionType: CameraLens.PerspectiveProjection
@@ -22,18 +20,14 @@ Entity {
     components: [
         RenderSettings {
             activeFrameGraph: ForwardRenderer {
-                clearColor: Qt.rgba(0, 0.5, 1, 1)
                 camera: camera
+                clearColor: Qt.rgba(0, 0.5, 1, 1)
             }
         },
         InputSettings {}
     ]
 
     FirstPersonCameraController { camera: camera }
-    PhongMaterial {
-        id: material
-        diffuse: Qt.rgba(.5, .5, .5, 1)
-    }
 
     SphereMesh {
         id: mesh
@@ -42,14 +36,23 @@ Entity {
         rings: 30
     }
 
+    PhongMaterial {
+        id: material
+        diffuse: Qt.rgba(1, 0.2, 0, 1)
+    }
+
+    Entity {
+        components: [mesh, material]
+    }
+
     Transform {
         id: transform
         property real user_angle: 0.0
         matrix: {
             var m = Qt.matrix4x4();
-            m.rotate(user_angle, Qt.vector3d(0, 1, 0))
-            m.translate(Qt.vector3d(20, 0, 0))
-            return m
+            m.rotate(user_angle, Qt.vector3d(0, 1, 0));
+            m.translate(Qt.vector3d(20, 0, 0));
+            return m;
         }
     }
 
@@ -63,13 +66,9 @@ Entity {
         running: true
     }
 
-
     Entity {
         components: [mesh, material, transform]
     }
 
-    Entity {
-        components: [mesh, material]
-    }
 
 }
