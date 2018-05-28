@@ -4,6 +4,13 @@
 #include <Qt3DCore/QNode>
 #include <Qt3DCore/QTransform>
 
+
+
+/* Concrete class to expose a `user_angle` property
+ * we'll use a `QPropertyAnimation` to vary the `user_angle`
+ * from "0" to "360" over 10 seconds.
+ *  Check out `_rotate` slot for implementation
+ */
 class RotateTransform : public Qt3DCore::QTransform
 {
     Q_OBJECT
@@ -35,9 +42,12 @@ signals:
 private slots:
     void _rotate()
     {
+       // create a 4x4 matrix
        QMatrix4x4 matrix;
+       // rotate based on angle
        matrix.rotate(_user_angle, QVector3D(0, 1, 0));
        matrix.translate(QVector3D(20, 0, 0));
+       // set the matrix to our new matrix!
        setMatrix(matrix);
     }
 
