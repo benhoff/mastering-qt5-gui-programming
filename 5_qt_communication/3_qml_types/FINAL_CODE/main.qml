@@ -1,6 +1,5 @@
 import QtQuick 2.0
 import QtQuick.Window 2.2
-
 import blue_elephants 1.0
 
 Window {
@@ -29,14 +28,12 @@ Window {
         clip: true
     }
 
-    ColorChangeDialog {
+    ColorChangeDialog{
         id: color_dialog
-
     }
 
     ThisModuleType {
-
+        id: my_module
     }
-
 
 }

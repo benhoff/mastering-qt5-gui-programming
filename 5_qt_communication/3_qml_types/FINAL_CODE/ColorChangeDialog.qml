@@ -1,8 +1,8 @@
 import QtQuick 2.0
-
 import QtQuick.Dialogs 1.3
 import QtQuick.Controls 1.2
 import ColorPickers 1.0
+
 
 
 // This dialog helps our users change the color

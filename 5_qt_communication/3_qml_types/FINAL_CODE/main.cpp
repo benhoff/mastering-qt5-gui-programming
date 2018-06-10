@@ -14,9 +14,16 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
+
+    // TODO: add the `imports` absolute path to engine
+    // using the `addImportPath` method
     engine.addImportPath("/home/hoff/recording/mastering_qt/5_qt_communication/3_qml_types/imports");
 
+    // TODO: use the `qmlRegisterType` method to add the C++ class
+    // `ColorPickers` as a useable QML type.
     qmlRegisterType<ColorPicker>("ColorPickers", 1, 0, "ColorPicker");
+
+
 
 
     PhotoModel photo_model;
