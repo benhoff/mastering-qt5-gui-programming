@@ -15,6 +15,13 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
+    // TODO: add the `imports` absolute path to engine
+    // using the `addImportPath` method
+
+    // TODO: use the `qmlRegisterType` method to add the C++ class
+    // `ColorPickers` as a useable QML type.
+
+
 
 
     PhotoModel photo_model;
